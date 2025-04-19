@@ -31,7 +31,7 @@ def importMyBot(x, userQuestion):
     # Initialize ChatOpenAI instance with GPT-4o-mini (GPT-4o-mini 모델 초기화)
     llm = ChatOpenAI(
         model="gpt-4o-mini",  # Light and fast model (가볍고 빠른 모델)
-        temperature=0,        # Deterministic responses (응답의 일관성 유지)
+        temperature=1,        # Deterministic responses (응답의 일관성 유지)
         api_key=OPENAI_API_KEY  # Load API key from environment (.env에서 불러온 키 사용)
     )
 
@@ -100,8 +100,9 @@ def importMyBot(x, userQuestion):
 
             import matplotlib.pyplot as plt
             import matplotlib.font_manager as fm
-            plt.rcParams['font.family'] = 'NanumGothic'
-            plt.rcParams['axes.unicode_minus'] = False
+            plt.rc('font', family='NanumGothicOTF') # For MacOS
+            plt.rc('font', family='NanumGothic') # For Windows
+            %matplotlib inline
 
             exec(visual_code)  # Execute the visualization code (시각화 코드 실행)
 

@@ -7,7 +7,7 @@ st.set_page_config(layout="wide")
 
 st.title("Number of foreign ships entering and cargo volume by port in Korea.", anchor=False)
 
-tab_1, tab_2, tab_3 = st.tabs(["Analysis Process(EN)", "Analysis Process(KR)", "Data collection/preprocessing process/E.D.A"])
+tab_1, tab_2, tab_3 = st.tabs(["Analysis Process(EN)", "Analysis Process(KR)", "Data Prep&EDA"])
 
 with tab_1:
     st.markdown("""

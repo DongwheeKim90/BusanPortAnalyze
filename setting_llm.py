@@ -98,12 +98,6 @@ def importMyBot(x, userQuestion):
             visual_code = response["intermediate_steps"][0][0].tool_input["query"]  # Extract generated code (생성된 시각화 코드 추출)
             df = x.copy()  # Ensure 'df' is defined for exec (시각화 코드 내 df 참조 위해 복사)
 
-            import matplotlib.pyplot as plt
-            import matplotlib.font_manager as fm
-            plt.rc('font', family='NanumGothicOTF') # For MacOS
-            plt.rc('font', family='NanumGothic') # For Windows
-            %matplotlib inline
-
             exec(visual_code)  # Execute the visualization code (시각화 코드 실행)
 
             # Save matplotlib figure to in-memory buffer (matplotlib 그래프를 메모리에 저장)

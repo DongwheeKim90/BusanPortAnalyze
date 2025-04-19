@@ -66,9 +66,25 @@ def importMyBot(x, userQuestion):
 
     # Define keywords to detect visualization intent (시각화 요청 판단용 키워드 리스트)
     visualization_keywords = [
-        "plot", "graph", "chart", "visualize", "hist", "scatter",
-        "시각화", "그래프", "히스토그램", "산점도", "막대그래프"
+        # English keywords (50)
+        "plot", "graph", "chart", "visualize", "visualization", "display", "show", "draw", "render",
+        "hist", "histogram", "bar", "bar chart", "line", "line chart", "scatter", "scatter plot",
+        "pie", "pie chart", "map", "heatmap", "boxplot", "box plot", "area", "area chart", 
+        "bubble chart", "density", "distribution", "trend", "time series", "stacked chart",
+        "stacked bar", "grouped bar", "plotly", "matplotlib", "seaborn", "bokeh", "dash", "altair",
+        "ggplot", "candlestick", "gantt", "choropleth", "treemap", "sunburst", "violin plot",
+        "pairplot", "facet", "grid plot", "interactive chart",
+    
+        # Korean keywords (50)
+        "시각화", "시각화해줘", "그래프", "그래프 그려줘", "히스토그램", "히스토그램 그려줘", "막대그래프",
+        "막대그래프 그려줘", "산점도", "산점도 그려줘", "파이차트", "파이차트 그려줘", "꺾은선그래프",
+        "꺾은선그래프 그려줘", "선형그래프", "선형그래프 그려줘", "분포도", "분포도 그려줘", "상자그림",
+        "상자그림 그려줘", "지도", "지도 그려줘", "열지도", "밀도그래프", "밀도차트", "트렌드", "시계열",
+        "누적그래프", "누적차트", "군집도", "집단그래프", "산점그래프", "선그래프", "점그래프", "시계열그래프",
+        "인사이트 시각화", "수치 시각화", "분석 시각화", "데이터 시각화", "컬러맵", "컬러히트맵", "계층그래프",
+        "트리맵", "선버스트", "비올린플롯", "조합그래프", "여러 그래프", "복합 그래프", "분산 그래프"
     ]
+
 
     # Case 1: If the user's question is about visualization (시각화 요청인 경우)
     if any(kw in userQuestion.lower() for kw in visualization_keywords):

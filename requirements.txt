@@ -140,5 +140,3 @@ wsproto==1.2.0
 xyzservices==2025.1.0
 yarl==1.20.0
 zstandard==0.23.0
-# 윈도우에서만 설치되도록 조건 추가
-pywin32==310; sys_platform == "win32"

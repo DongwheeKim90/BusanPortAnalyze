@@ -833,7 +833,7 @@ with tab_3:
     (1) Data Source : https://www.chainportal.co.kr/nexacro/index.html?screenid=screen_main <br>
     (2) Collected Data : Data collection of annual vessel calls and cargo throughput for the entire Port of Busan and its three major sub-ports(부산항 전체 및 3대 부산항구의 연간 입항 배 건수와 물동량 데이터 수집)<br>
     (3) Data Type : Structured Data(정형 데이터)<br>
-    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas<br>
+    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas, Plotly Express & Plotly Graph Objects<br>
     (5) Data Collection and Preprocessing Process
     ''',unsafe_allow_html=True)
     st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Collection (데이터 수집)</span>", unsafe_allow_html=True)

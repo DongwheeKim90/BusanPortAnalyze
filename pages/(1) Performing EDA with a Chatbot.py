@@ -555,7 +555,8 @@ elif selectData == ":rainbow[Vacant data around Busan's three major ports]":
                 # (UI를 새로고침하여 새로운 메시지를 즉시 반영)
                 st.rerun()
 # Case 8
-elif selectData == ":rainbow[Time series data on vessel dwell time by shipping company at Busan SinHang Port]":
+# elif selectData == ":rainbow[Time series data on vessel dwell time by shipping company at Busan SinHang Port]":
+else:
     st.markdown(
         """
         <div style="background-color:#cce5ff; padding:10px; border-radius:5px;">

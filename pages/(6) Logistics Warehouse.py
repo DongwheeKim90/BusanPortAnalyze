@@ -11,7 +11,7 @@ st.set_page_config(layout="wide")
 
 st.title("Vacancy data analysis for ship supplies storage", anchor=False)
 
-tab_1, tab_2, tab_3 = st.tabs(["Analysis Process(EN)", "Analysis Process(KR)", "Data Prep&EDA"])
+tab_1, tab_2, tab_3 = st.tabs(["Analysis Process(EN)", "Analysis Process(KR)", "Data Preprocessing"])
 
 with tab_1:
     st.markdown("""

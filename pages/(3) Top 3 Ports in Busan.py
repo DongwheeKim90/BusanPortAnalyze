@@ -423,10 +423,8 @@ with tab_1:
     st.plotly_chart(df_busanWeight, key="trend_shipWeight_en")
 
     st.markdown('''
-    For the entire Busan Port (including all three ports), we observed a <span style='color:orange; font-weight:bold; font-size:20px;'>decreasing trend in the number of ship arrivals</span>,
-    but a <span style='color:orange; font-weight:bold; font-size:20px;'>rising trend in cargo volume</span>.
+    Based on the analysis of the three ports in Busan, <span style='color:white; font-weight:bold; font-size:20px;'>the number of arriving vessels has shown a decreasing trend, while the volume of cargo handled has been increasing</span>. This can be interpreted as a result of <span style='color:orange; font-weight:bold; font-size:20px;'>shipping companies replacing their vessels with larger cargo ships to improve transport efficiency</span>, which is a typical characteristic of maritime logistics.
     ''', unsafe_allow_html=True)
-
 
 with tab_2:
     st.subheader("부산 항구", anchor=False)
@@ -827,5 +825,5 @@ with tab_2:
     st.plotly_chart(df_busanWeight, key="trend_shipWeight_kr")
 
     st.markdown('''
-    부산항구(3개 항구) 전체 기준으로 입항하는 <span style='color:orange; font-weight:bold; font-size:20px;'>배의 수는 감소하는 추세</span>지만 입항되는 <span style='color:orange; font-weight:bold; font-size:20px;'>물동량은 상승 추세</span>라는 것을 확인 할 수 있었습니다.
+    부산의 3개 항구를 기준으로 분석한 결과, <span style='color:white; font-weight:bold; font-size:20px;'>입항하는 선박 수는 감소 추세인 반면, 입항 물동량은 오히려 증가하는 추세</span>를 보였습니다. 이는 <span style='color:orange; font-weight:bold; font-size:20px;'>해운 기반 유통의 특성상, 선사들이 운송 효율성을 높이기 위해 더 큰 규모의 카고선으로 교체 운영</span>했기 때문으로 해석할 수 있습니다.
     ''', unsafe_allow_html=True)

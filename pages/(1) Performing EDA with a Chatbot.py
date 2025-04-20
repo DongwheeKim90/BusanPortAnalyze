@@ -30,7 +30,7 @@ if selectData == ":rainbow[Time series data on foreign vessel arrivals at ports 
         <div style="background-color:#cce5ff; padding:10px; border-radius:5px;">
             <span style="color:#ff8c00; font-weight:bold;">
                 📌 Currently selected data:
-                Time series data on shipping companies/cargo volumes by port in South Korea
+                Time series data on foreign vessel arrivals at ports across South Korea
             </span>
         </div>
         """, unsafe_allow_html=True
@@ -106,7 +106,7 @@ elif selectData == ":rainbow[Time series data on the number of vessel arrivals a
         <div style="background-color:#cce5ff; padding:10px; border-radius:5px;">
             <span style="color:#ff8c00; font-weight:bold;">
                 📌 Currently selected data:
-                Time series data on shipping companies and cargo volumes entering the three major ports of Busan, South Korea
+                Time series data on the number of vessel arrivals and cargo throughput at the three major ports in Busan
             </span>
         </div>
         """, unsafe_allow_html=True
@@ -182,7 +182,7 @@ elif selectData == ":rainbow[Location and address data of the three major ports 
         <div style="background-color:#cce5ff; padding:10px; border-radius:5px;">
             <span style="color:#ff8c00; font-weight:bold;">
                 📌 Currently selected data:
-                Annual sales amount and number of sales data for pre-sale items
+                Location and address data of the three major ports in Busan
             </span>
         </div>
         """, unsafe_allow_html=True
@@ -258,7 +258,7 @@ elif selectData == ":rainbow[Monthly and yearly data on the number of ship suppl
         <div style="background-color:#cce5ff; padding:10px; border-radius:5px;">
             <span style="color:#ff8c00; font-weight:bold;">
                 📌 Currently selected data:
-                Meat company data related to shipping supplies
+                Monthly and yearly data on the number of ship supplies sales and sales amount
             </span>
         </div>
         """, unsafe_allow_html=True
@@ -334,7 +334,7 @@ elif selectData == ":rainbow[Meat company data related to shipping supplies]":
         <div style="background-color:#cce5ff; padding:10px; border-radius:5px;">
             <span style="color:#ff8c00; font-weight:bold;">
                 📌 Currently selected data:
-                Food company data related to shipping supplies
+                Meat company data related to shipping supplies
             </span>
         </div>
         """, unsafe_allow_html=True
@@ -410,7 +410,7 @@ elif selectData == ":rainbow[Food company data related to shipping supplies]":
         <div style="background-color:#cce5ff; padding:10px; border-radius:5px;">
             <span style="color:#ff8c00; font-weight:bold;">
                 📌 Currently selected data:
-                Vacant data around Busan's three major ports
+                Food company data related to shipping supplies
             </span>
         </div>
         """, unsafe_allow_html=True
@@ -562,7 +562,7 @@ else:
         <div style="background-color:#cce5ff; padding:10px; border-radius:5px;">
             <span style="color:#ff8c00; font-weight:bold;">
                 📌 Currently selected data:
-                Vacant data around Busan's three major ports
+                Time series data on vessel dwell time by shipping company at Busan SinHang Port
             </span>
         </div>
         """, unsafe_allow_html=True

@@ -542,5 +542,3 @@ with tab_3:
     # Final interactive map result (최종 지도 결과)
     targetArea
     ''')
-        ''', unsafe_allow_html=True)
-    st.dataframe(groupMerge, hide_index=True)

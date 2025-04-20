@@ -287,7 +287,7 @@ with tab_2:
     st.subheader("결론", anchor=False)
     st.markdown('''
         위의 공실 시각화 데이터를 통하여 <span style='color:orange; font-weight:bold; font-size:20px;'>항구별 최적의 지리적 유통 거점을 선점할 수 있으며, 온라인 선용품 쇼핑몰 예산 산정 및 배분에 참고</span> 할 수 있습니다.
-
+        ''',,unsafe_allow_html=True)
 with tab_3:
     st.markdown("""
     (1) Data Source : "https://new.land.naver.com/offices?ms=35.087642,128.8114855,16&a=SG&e=RETAIL&ad=true", "https://new.land.naver.com/offices?ms=35.094507,128.835046,16&a=SG&e=RETAIL&ad=true", "https://new.land.naver.com/offices?ms=35.120913,129.0412781,17&a=SG&e=RETAIL&ad=true", "https://new.land.naver.com/offices?ms=35.081925,128.987775,16&a=SG&e=RETAIL&ad=true" <br>

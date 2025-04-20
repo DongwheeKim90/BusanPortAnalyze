@@ -572,7 +572,7 @@ else:
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/SinhangSchedule_rawData.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("./useData/forLLM_data/SinhangSchedule.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:

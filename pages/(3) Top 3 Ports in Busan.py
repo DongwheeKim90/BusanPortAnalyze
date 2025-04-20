@@ -14,7 +14,7 @@ st.set_page_config(layout="wide")
 
 st.title("Data Analysis for Sourcing Item-Related Companies for an Online Ship Supply Platform", anchor=False)
 
-tab_1, tab_2, tab_3 = st.tabs(["Analysis Process(EN)", "Analysis Process(KR)", "Data Prep&EDA"])
+tab_1, tab_2, tab_3 = st.tabs(["Analysis Process(EN)", "Analysis Process(KR)", "Data Preprocessing"])
 
 with tab_1:
     st.subheader("Busan Ports", anchor=False)

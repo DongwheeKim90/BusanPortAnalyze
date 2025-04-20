@@ -219,7 +219,7 @@ with tab2:
         st.plotly_chart(scatter2,key='scatter2')
         st.markdown(f"""
         <span style='color:orange; font-weight:bold; font-size:20px;'>CT</span>와 <span style='color:orange; font-weight:bold; font-size:20px;'>체류 시간</span> 사이의 상관계수는 <span style='color:orange; font-weight:bold; font-size:20px;'>{round(corr2,4)}</span>이고, 대응하는 <span style='color:orange; font-weight:bold; font-size:20px;'>p-value는 {round(p2,4)}</span>입니다.<br>
-        <span systle='font-size:5px;'>(소수점 넷째 자리까지 반올림 한 수치입니다.)<br>
+        <span style='font-size:5px;'>(소수점 넷째 자리까지 반올림 한 수치입니다.)<br>
         <span style='color:orange; font-weight:bold; font-size:20px;'>p-value가 0과 매우 가깝기 때문에</span>, 이 상관관계는 <span style='color:orange; font-weight:bold; font-size:20px;'>통계적으로 유의미하다</span>고 할 수 있습니다.<br><br>
         따라서 <span style='color:orange; font-weight:bold; font-size:20px;'>CT와 체류 시간은 유의미한 양의 상관관계를 가진다</span>고 결론지을 수 있습니다.  
         즉, <span style='color:orange; font-weight:bold; font-size:20px;'>CT가 증가할수록 체류 시간도 증가하는 경향</span>이 있습니다.

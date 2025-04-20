@@ -50,8 +50,8 @@ with pjtIntro_tab_1:
             "Item-wise Word Cloud"
         ],
         "Purpose of Analysis": [
-            "Identify the top 3 high-demand ship supply items and designate them as initial products for the online mall",
-            "Source manufacturers/sellers for the top 3 popular items",
+            "Identify the top 2 high-demand ship supply items and designate them as initial products for the online mall",
+            "Source manufacturers/sellers for the top 2 popular items",
             "Identify available warehouse spaces near Busan Port to store ordered supplies",
             "Extract key keywords by item and use them for discovering related products and companies"
         ],
@@ -164,7 +164,7 @@ with pjtIntro_tab_2:
     '''
     strategy_kinds_kr_df1 = pd.DataFrame({
         "종류" : ["선용품 품목별 추이 분석", "온라인 판매기업 소싱", "창고 거점확보 분석", "품목별 워드크라우드"],
-        "분석목적" : ["수요가 많은 선용품 품목 상위 3개를 뽑아, 해당 품목으로 온라인 쇼핑몰 초기 판매상품으로 지정", "상위 3개 인기품목 해당하는 제품을 생산/판매기업 소싱", "주문한 선용품을 보관할 수 있는 창고 확보를 위해 부산항 부근의 공실 파악", "품목별 핵심 키워드를 파악하여 연관상품 및 기업 소싱에 활용"],
+        "분석목적" : ["수요가 많은 선용품 품목 상위 2개를 뽑아, 해당 품목으로 온라인 쇼핑몰 초기 판매상품으로 지정", "상위 2개 인기품목 해당하는 제품을 생산/판매기업 소싱", "주문한 선용품을 보관할 수 있는 창고 확보를 위해 부산항 부근의 공실 파악", "품목별 핵심 키워드를 파악하여 연관상품 및 기업 소싱에 활용"],
         "활용기술" :["데이터 크롤링/전처리/시각화", "데이터 크롤링/전처리/시각화", "데이터 크롤링/전처리/시각화", "데이터 크롤링/전처리/시각화"]
     })
     st.markdown(strategy_kinds_kr_1)

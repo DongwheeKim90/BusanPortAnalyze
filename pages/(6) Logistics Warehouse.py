@@ -256,7 +256,7 @@ with tab_2:
                 f"</div>"
             )
 
-            popup = folium.Popup(noticeInfo, max_width=400, min_width=30, max_height=300, show=True)
+            popup_2 = folium.Popup(noticeInfo, max_width=400, min_width=30, max_height=300, show=True)
 
             myIcon = "./useData/myImage/vacancyMan.png"
             myIcon_edit = CustomIcon(
@@ -268,7 +268,7 @@ with tab_2:
             folium.Marker(
                 location=[lat, lon],
                 icon=myIcon_edit
-            ).add_child(popup).add_to(targetArea_2)
+            ).add_child(popup_2).add_to(targetArea_2)
 
         # 원형 마커는 모든 공실에 추가
         folium.CircleMarker(

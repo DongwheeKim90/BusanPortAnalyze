@@ -633,6 +633,11 @@ else:
                 
 expander = st.expander("Basic LLM Integration Code (using OpenAI API)")
 expander.code('''
+# ------------------------------------------------------------------------------
+# Author: DongWhee Kim
+# Date: 2025-04-15
+# Description: ImplementLCEL and Agent function implementation functions related to Open-Ai/LangChain.
+# ------------------------------------------------------------------------------
 import os  # Import os module for accessing environment variables (환경 변수 접근을 위한 os 모듈)
 import streamlit as st  # Import Streamlit for interactive web interface (대화형 웹 인터페이스 제공을 위한 Streamlit 임포트)
 import matplotlib.pyplot as plt  # Import matplotlib (used for plotting) (시각화를 위한 matplotlib 임포트)
@@ -674,7 +679,7 @@ def importMyBot(x, userQuestion):
     prompt = ChatPromptTemplate.from_messages([
         {
             "role": "system",
-            "content": '''
+            "content": "
             From now on, your name is Javis. You worked for the genius hero Iron Man Tony Stark and came to me after being hired.
             Your job is to answer based on the user's tone, in their language, with integrity and precision.
 
@@ -685,7 +690,7 @@ def importMyBot(x, userQuestion):
             4. When expressing it numerically, only say the number.
             5. If the user has questions that are not related to the data you have, guide them to use Google Search.
             6. When the user asks about the data, talk about it based on basic EDA.
-            '''
+            "
         },
         {"role": "user", "content": "{input}"}
     ])
@@ -757,6 +762,11 @@ def importMyBot(x, userQuestion):
         result = myChain.invoke({"input": userQuestion})  # 일반 챗봇 응답
         return result  # 텍스트 반환
 
+# ------------------------------------------------------------------------------
+# Author: DongWhee Kim
+# Date: 2025-04-15
+# Description: Implementing a chatbot in Streamlet using the LLM-related LCEL and Agent specified above.
+# ------------------------------------------------------------------------------
 import streamlit as st  # Import the Streamlit library (Streamlit 라이브러리 임포트)
 import pandas as pd  # Import the pandas library for data handling (데이터 처리를 위한 pandas 라이브러리 임포트)
 from setting_llm import importMyBot  # Import custom chatbot logic (사용자 정의 챗봇 로직 임포트)

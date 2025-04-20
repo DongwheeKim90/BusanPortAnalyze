@@ -150,6 +150,7 @@ with tab_1:
     Through the above vacancy data visualization, we can <span style='color:orange; font-weight:bold; font-size:20px;'>secure optimal geographic logistics hubs near each port</span>,
     which can also serve as a valuable reference for <span style='color:orange; font-weight:bold; font-size:20px;'>budget estimation and allocation for the online ship supply platform</span>.
     ''', unsafe_allow_html=True)
+    st.dataframe(groupMerge, hide_index=True)
 
 
 with tab_2:

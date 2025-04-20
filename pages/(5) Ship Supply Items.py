@@ -1290,7 +1290,7 @@ with tab_3:
     (1) Data Source : "https://dart.fss.or.kr/dsae001/main.do#none" <br>
     (2) Collected Data : Collect corporate data related to ship supplies, especially companies dealing with meat and food.(선용품 품목 관련, 특히 육류 및 식품을 취급하는 기업 정보 데이터 수집)<br>
     (3) Data Type : Structured Data(정형 데이터)<br>
-    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas<br>
+    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas, Plotly Express & Plotly Graph Objects<br>
     (5) Data Collection and Preprocessing Process
     ''',unsafe_allow_html=True)
     st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Collection (데이터 수집)</span>", unsafe_allow_html=True)

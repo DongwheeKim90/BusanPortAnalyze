@@ -258,16 +258,16 @@ with tab_2:
 
             popup_2 = folium.Popup(noticeInfo, max_width=400, min_width=30, max_height=300, show=True)
 
-            myIcon = "./useData/myImage/vacancyMan.png"
-            myIcon_edit = CustomIcon(
-                icon_image=myIcon,
+            myIcon_2 = "./useData/myImage/vacancyMan.png"
+            myIcon_edit_2 = CustomIcon(
+                icon_image=myIcon_2,
                 icon_size=(31, 31),
                 icon_anchor=(15, 15)
             )
 
             folium.Marker(
                 location=[lat, lon],
-                icon=myIcon_edit
+                icon=myIcon_edit_2
             ).add_child(popup_2).add_to(targetArea_2)
 
         # 원형 마커는 모든 공실에 추가

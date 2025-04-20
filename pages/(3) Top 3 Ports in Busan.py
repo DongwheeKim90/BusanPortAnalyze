@@ -827,3 +827,436 @@ with tab_2:
     st.markdown('''
     부산의 3개 항구를 기준으로 분석한 결과, <span style='color:white; font-weight:bold; font-size:20px;'>입항하는 선박 수는 감소 추세인 반면, 입항 물동량은 오히려 증가하는 추세</span>를 보였습니다. 이는 <span style='color:orange; font-weight:bold; font-size:20px;'>해운 기반 유통의 특성상, 선사들이 운송 효율성을 높이기 위해 더 큰 규모의 카고선으로 교체 운영</span>했기 때문으로 해석할 수 있습니다.
     ''', unsafe_allow_html=True)
+
+with tab_3:
+    st.markdown('''
+    (1) Data Source : https://www.chainportal.co.kr/nexacro/index.html?screenid=screen_main <br>
+    (2) Collected Data : Data collection of annual vessel calls and cargo throughput for the entire Port of Busan and its three major sub-ports(부산항 전체 및 3대 부산항구의 연간 입항 배 건수와 물동량 데이터 수집)<br>
+    (3) Data Type : Structured Data(정형 데이터)<br>
+    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas<br>
+    (5) Data Collection and Preprocessing Process
+    ''',unsafe_allow_html=True)
+    st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Collection (데이터 수집)</span>", unsafe_allow_html=True)
+    st.video("./useData/busanports.mp4")
+    st.code('''
+    # ------------------------------------------------------------------------------
+    # Author: DongWhee Kim
+    # Date: 2025-04-10
+    # Description: Collect annual vessel calls and cargo throughput data from
+    #              ChainPortal for Busan Port (전체, 신항, 북항, 감천항) using Selenium.
+    # ------------------------------------------------------------------------------
+
+    # Selenium for web automation
+    from selenium import webdriver
+    from selenium.webdriver.chrome.service import Service
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver import ActionChains
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+
+    # Standard modules
+    import time  # for sleep/delay
+    import re    # for dynamic ID extraction
+
+    # Data handling
+    import pandas as pd
+
+    # ------------------------------------------------------------------------------
+    # Step 1: Chrome WebDriver 설정
+    # ------------------------------------------------------------------------------
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("no-sandbox")  # Sandbox 모드 비활성화
+
+    chrome_service = Service("../autoDriver/chromedriver.exe")
+    driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
+    action = ActionChains(driver)
+    driver.maximize_window()
+
+    # 명시적 대기 설정 (3초)
+    wait = WebDriverWait(driver, 3)
+
+    # ------------------------------------------------------------------------------
+    # Step 2: BeautifulSoup을 위한 find 함수 정의
+    # ------------------------------------------------------------------------------
+    def bs4_find(value):
+        return mysoup.select_one(value)
+
+    def bs4_finds(value):
+        return mysoup.select(value)
+
+    def selenium_find(css_selector):
+        return wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
+
+    def selenium_finds(css_selector):
+        return wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, css_selector)))
+
+    # ------------------------------------------------------------------------------
+    # Step 3: 사이트 접속 및 로그인 처리
+    # ------------------------------------------------------------------------------
+    target_url = "https://www.chainportal.co.kr/portstat/nexacro/index.html?screenid=screen_stat"
+    driver.get(target_url)
+    time.sleep(50)
+    print(f"사이트 접속 완료 : {target_url}")
+
+    input_fields = selenium_finds("input.nexainput")
+    for field in input_fields:
+        field_value = field.get_attribute("value")
+        if field_value == "":
+            field.click()
+            field.send_keys("romangrism")
+        elif field_value == "패스워드를 입력해 주세요":
+            field.click()
+            field.send_keys("xhdtls723186!@\n")
+    print("아이디 비밀번호 기입 완료")
+    print("로그인 성공")
+    time.sleep(10)
+
+    # 메뉴 클릭
+    selenium_find("div#mainframe\\.frameIndex\\.form\\.divFrameLeft\\.form\\.divLeft\\.form\\.grdTree\\.body\\.gridrow_0\\.cell_0_1\\:text").click()
+    print("선박메뉴 클릭 완료")
+    selenium_find("div#mainframe\\.frameIndex\\.form\\.divFrameLeft\\.form\\.divLeft\\.form\\.grdTree\\.body\\.gridrow_1\\.cell_1_1\\:text").click()
+    print("연도별 입출항 통계 클릭 완료")
+    time.sleep(5)
+
+    # ------------------------------------------------------------------------------
+    # Step 4: 검색 초기화 및 입력
+    # ------------------------------------------------------------------------------
+    year_input_selector = "input[aria-labelledby$='edtYYYYFrom']"
+    selenium_find(year_input_selector).click()
+    time.sleep(1)
+    selenium_find(year_input_selector).clear()
+    time.sleep(1)
+    selenium_find(year_input_selector).send_keys("2013")
+    time.sleep(1)
+    print("시작년도 초기화 및 값 입력 완료")
+
+    # 입항 클릭
+    selenium_find("img[alt=' 입항']").click()
+
+    # ------------------------------------------------------------------------------
+    # Step 5: 항구 및 연도 정의
+    # ------------------------------------------------------------------------------
+    harbor_list = ["부산항(전체)", "신항", "북항", "감천항"]
+    year_range = list(range(2013, 2026))
+
+    # ------------------------------------------------------------------------------
+    # Step 6: 항구별 반복 수집
+    # ------------------------------------------------------------------------------
+    for harbor_name in harbor_list:
+        # 동적 ID 추출
+        page_html = driver.page_source
+        match = re.search(r"win80050100_0_\d+", page_html)
+        win_id = match.group()
+        print(f"현재 추출된 win_id: {win_id}")
+
+        # 드롭다운에서 항구 선택
+        harbor_dropdown = driver.find_element(
+            By.XPATH,
+            f"//*[@id='mainframe.frameIndex.form.divMain.form.{win_id}.form.divWork.form.Div00.form.cboPrtAtCode.comboedit:input']"
+        )
+        harbor_dropdown.click()
+        time.sleep(2)
+
+        selected_option = driver.find_element(By.XPATH, f"//div[text()='{harbor_name}']")
+        selected_option.click()
+        print(f"{harbor_name} 선택 완료")
+        time.sleep(3)
+
+        # 검색 버튼 클릭
+        search_button = driver.find_element(
+            By.XPATH,
+            f"//*[@id='mainframe.frameIndex.form.divMain.form.{win_id}.form.divWork.form.Div00.form.Button05_00:icontext']/div"
+        )
+        search_button.click()
+        print("검색버튼 클릭")
+        time.sleep(5)
+
+        # 다시 win_id 추출
+        page_html = driver.page_source
+        match = re.search(r"win80050100_0_\d+", page_html)
+        win_id = match.group()
+        print(f"검색 후 추출된 win_id: {win_id}")
+
+        # 데이터 수집 리스트 초기화
+        collected_years = []
+        ship_counts = []
+        gross_tonnages = []
+
+        # 연도별 데이터 수집
+        for idx, year in enumerate(year_range):
+            year_text = driver.find_element(
+                By.XPATH,
+                f"//*[@id='mainframe.frameIndex.form.divMain.form.{win_id}.form.divWork.form.grdMain.body.gridrow_{idx}.cell_{idx}_0:text']"
+            ).text
+            collected_years.append(year_text)
+
+            count_text = driver.find_element(
+                By.XPATH,
+                f"//*[@id='mainframe.frameIndex.form.divMain.form.{win_id}.form.divWork.form.grdMain.body.gridrow_{idx}.cell_{idx}_5:text']"
+            ).text
+            ship_counts.append(count_text)
+
+            gt_text = driver.find_element(
+                By.XPATH,
+                f"//*[@id='mainframe.frameIndex.form.divMain.form.{win_id}.form.divWork.form.grdMain.body.gridrow_{idx}.cell_{idx}_6:text']"
+            ).text
+            gross_tonnages.append(gt_text)
+
+            time.sleep(1)
+
+        # DataFrame 저장
+        harbor_df = pd.DataFrame({
+            "Harbor Name": [harbor_name] * len(year_range),
+            "Year": collected_years,
+            "Ship Count": ship_counts,
+            "GT(Gross Tonnage)": gross_tonnages
+        })
+
+        # CSV 저장
+        output_path = f"../useData/busan_{harbor_name}_rawData.csv"
+        harbor_df.to_csv(output_path, encoding="utf-8-sig", index=False)
+        print(f"{harbor_name} 데이터 저장 완료: {output_path}")
+
+            ''')
+    st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Preprocessing (데이터 가공)</span>", unsafe_allow_html=True)
+    st.code('''
+    # ------------------------------------------------------------------------------
+    # Author: DongWhee Kim
+    # Date: 2025-04-10
+    # Description: Data preprocessing and visualization for annual ship traffic and
+    #              cargo throughput at Busan Port and its three major sub-ports
+    # ------------------------------------------------------------------------------
+
+    import pandas as pd                        # For data handling and analysis (데이터 처리 및 분석)
+    import plotly.graph_objects as go          # For bar and combined visualizations (막대 및 혼합 시각화)
+    import plotly.express as px                # For scatter plots and trend lines (산점도 및 추세선)
+    import scipy.stats as stats                # For correlation and p-value (상관계수 및 p-value 분석)
+    import folium                              # For map visualization (지도 시각화)
+    from folium.features import CustomIcon     # For custom icons on folium map (지도 아이콘 커스터마이징)
+    from sklearn.preprocessing import MinMaxScaler  # For data normalization (데이터 정규화)
+    import os                                  # For file and folder handling (파일 및 폴더 제어)
+    import json                                # For reading GeoJSON files (GeoJSON 파일 읽기)
+
+    # ------------------------------------------------------------------------------
+    # Load all CSV files from folder except total Busan port (전체)
+    # ("부산항(전체)" 제외하고 개별 항만 파일 읽기)
+    # ------------------------------------------------------------------------------
+    port_folder = "../useData/busanport/"
+    file_list = os.listdir(port_folder)
+
+    read_files = []
+
+    for file_name in file_list:
+        if "부산항(전체)" not in file_name:
+            df = pd.read_csv(os.path.join(port_folder, file_name))
+            read_files.append(df)
+        else:
+            total_busan_df = pd.read_csv(os.path.join(port_folder, file_name))
+
+    # ------------------------------------------------------------------------------
+    # Concatenate individual port data (개별 항만 데이터 통합)
+    # ------------------------------------------------------------------------------
+    individual_port = pd.concat(read_files, axis=0, ignore_index=False)
+
+    # ------------------------------------------------------------------------------
+    # Clean and convert text numbers (콤마 제거 및 숫자형으로 변환)
+    # ------------------------------------------------------------------------------
+    def remove_comma(x):
+        return x.replace(",", "")
+
+    individual_port["Year"] = individual_port["Year"].astype("object")
+    individual_port["Ship Count"] = individual_port["Ship Count"].apply(remove_comma).astype("int64")
+    individual_port["GT(Gross Tonnage)"] = individual_port["GT(Gross Tonnage)"].apply(remove_comma).astype("int64")
+
+    # ------------------------------------------------------------------------------
+    # Save cleaned dataset (전처리된 데이터 저장)
+    # ------------------------------------------------------------------------------
+    individual_port.to_csv("../useData/finishPrepro/busanAllPorts_GTCount.csv", encoding="utf-8-sig", index=False)
+
+    # ------------------------------------------------------------------------------
+    # Remove 2025 (incomplete year) from analysis (2025년 데이터 제외)
+    # ------------------------------------------------------------------------------
+    individual_port = individual_port[individual_port["Year"] != 2025]
+
+    # ------------------------------------------------------------------------------
+    # Bar chart - Ship Count by Port and Year (항구별 연도별 입항 선박수 시각화)
+    # ------------------------------------------------------------------------------
+    port_names = individual_port["Harbor Name"].unique()
+    data_ship_counts = []
+
+    for port in port_names:
+        port_data = individual_port[individual_port["Harbor Name"] == port].sort_values("Year")
+        data_ship_counts.append(
+            go.Bar(
+                x=port_data["Year"],
+                y=port_data["Ship Count"],
+                name=port,
+                text=port_data["Ship Count"],
+                textposition="inside",
+                texttemplate="%{text:,}"
+            )
+        )
+
+    fig = go.Figure(data=data_ship_counts)
+    fig.update_layout(
+        barmode="group",
+        title=dict(text="<b>Number of ships</b> entering Busan's three major ports by year", x=0.5),
+        xaxis=dict(title="Year", dtick=1),
+        yaxis_title="Number of ships",
+        legend=dict(bordercolor="grey", borderwidth=0.5)
+    )
+    fig.show()
+
+    # ------------------------------------------------------------------------------
+    # Bar chart - Cargo Volume (GT) by Port and Year (항구별 연도별 물동량 시각화)
+    # ------------------------------------------------------------------------------
+    data_cargo_volumes = []
+
+    for port in port_names:
+        port_data = individual_port[individual_port["Harbor Name"] == port].sort_values("Year")
+        data_cargo_volumes.append(
+            go.Bar(
+                x=port_data["Year"],
+                y=port_data["GT(Gross Tonnage)"],
+                name=port,
+                text=port_data["GT(Gross Tonnage)"],
+                textposition="inside",
+                texttemplate="%{text:,}"
+            )
+        )
+
+    fig = go.Figure(data=data_cargo_volumes)
+    fig.update_layout(
+        barmode="group",
+        title=dict(text="<b>Annual cargo volume</b> of Busan's three major ports", x=0.5),
+        xaxis=dict(title="Year", dtick=1),
+        yaxis_title="GT(Gross Tonnage)",
+        legend=dict(bordercolor="grey", borderwidth=0.5)
+    )
+    fig.show()
+
+    # ------------------------------------------------------------------------------
+    # Process total Busan port data (부산항 전체 데이터 전처리)
+    # ------------------------------------------------------------------------------
+    total_busan_df[["Ship Count", "GT(Gross Tonnage)"]] = total_busan_df[["Ship Count", "GT(Gross Tonnage)"]].applymap(remove_comma).astype("int64")
+    total_busan_df["Year"] = total_busan_df["Year"].astype("object")
+
+    total_busan_df = total_busan_df.iloc[:-1, :]  # Drop last row if necessary (마지막 행 제거)
+    total_visual_df = total_busan_df[["Year", "Ship Count", "GT(Gross Tonnage)"]].copy()
+
+    # ------------------------------------------------------------------------------
+    # Visualization: Combined chart (bar for ships, line for GT) (입항 건수 + 물동량 이중 축 시각화)
+    # ------------------------------------------------------------------------------
+    fig = go.Figure()
+
+    # Bar: Ship Count
+    fig.add_trace(
+        go.Bar(
+            x=total_visual_df["Year"],
+            y=total_visual_df["Ship Count"],
+            name="Ships",
+            textposition="auto",
+            marker=dict(color="blue")
+        )
+    )
+
+    # Line: Cargo Volume
+    fig.add_trace(
+        go.Scatter(
+            x=total_visual_df["Year"],
+            y=total_visual_df["GT(Gross Tonnage)"],
+            name="GT (Gross Tonnage)",
+            mode="lines+markers",
+            marker=dict(color="red"),
+            yaxis="y2"
+        )
+    )
+
+    fig.update_layout(
+        title={
+            "text": "<b>Annual ships and cargo volume</b> entering Busan Port",
+            "x": 0.45,
+            "font": {"size": 20, "color": "black"}
+        },
+        xaxis={"title": "Years", "dtick": 1},
+        yaxis={"title": "Ship Count"},
+        yaxis2={"title": "GT", "overlaying": "y", "side": "right"},
+        showlegend=True,
+        autosize=False,
+        width=900,
+        height=450,
+        legend=dict(
+            x=1,
+            y=1,
+            xanchor="right",
+            yanchor="top",
+            bgcolor="rgba(255,255,255,0)",
+            bordercolor="gray",
+            borderwidth=1
+        )
+    )
+    fig.show()
+
+    # ------------------------------------------------------------------------------
+    # Correlation analysis (상관계수 및 P-value 분석)
+    # ------------------------------------------------------------------------------
+    corr_value, p_value = stats.pearsonr(total_visual_df['Ship Count'], total_visual_df['GT(Gross Tonnage)'])
+    print(f"상관계수 : {round(corr_value, 3)}")
+    print(f"P-value : {round(p_value, 5)}")
+
+    # ------------------------------------------------------------------------------
+    # Folium Map Visualization - Ports in Busan (Folium을 활용한 항만 지도 시각화)
+    # ------------------------------------------------------------------------------
+    busan_geo_path = "../useData/koreaBusan.geojson"
+    with open(busan_geo_path, encoding="utf-8-sig") as f:
+        busan_geo = json.load(f)
+
+    def geo_style(feature):
+        return {
+            "fillColor": "#05d06b",
+            "color": "grey",
+            "weight": 0.5,
+            "fillOpacity": 0.2
+        }
+
+    # Create base map (기본 지도 생성)
+    busan_map = folium.Map(
+        location=[35.18397316013664, 129.07057865661844],
+        zoom_start=11,
+        tiles="CartoDB positron"
+    )
+
+    # Add GeoJSON overlay (부산시 영역 표시)
+    folium.GeoJson(
+        data=busan_geo,
+        name="Busan Metropolitan City",
+        style_function=geo_style
+    ).add_to(busan_map)
+
+    # Load port location CSV (항만 위치 파일 로드)
+    port_pos_df = pd.read_csv("../useData/busanThreeport_position.csv")
+
+    # Add markers to map (지도에 항만 마커 추가)
+    for _, row in port_pos_df.iterrows():
+        lat, lon = row["Latitude"], row["Longitude"]
+        port_html = f"- Port Name : {row[0]}<br>- Port Address : {row[1]}"
+        popup = folium.Popup(port_html, max_width=300, show=True)
+
+        # Custom icon
+        icon_path = "../useData/myImage/shipping.png"
+        custom_icon = CustomIcon(icon_image=icon_path, icon_size=(35, 35), icon_anchor=(10, 10))
+
+        # Add marker and circle
+        folium.Marker(location=[lat, lon], icon=custom_icon).add_child(popup).add_to(busan_map)
+        folium.CircleMarker(
+            location=[lat, lon],
+            radius=60,
+            fill=True,
+            color="#1f77b4",
+            fill_color="#ff7f0e"
+        ).add_to(busan_map)
+
+    # Display map object (지도 객체 반환)
+    busan_map
+    ''')

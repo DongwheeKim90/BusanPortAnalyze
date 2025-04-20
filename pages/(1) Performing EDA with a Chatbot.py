@@ -730,4 +730,3 @@ with chatBotArea:
             st.rerun()  # Rerun UI to update messages (UI 재실행하여 메시지 갱신)
 
 ''')
-expander.image("ht

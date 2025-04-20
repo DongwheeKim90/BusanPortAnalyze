@@ -344,7 +344,7 @@ elif selectData == ":rainbow[Meat company data related to shipping supplies]":
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/meat_company_LaLo.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("./useData/forLLM_data/company(Meat)_LaLo.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -420,7 +420,7 @@ elif selectData == ":rainbow[Food company data related to shipping supplies]":
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/food_company_LaLo.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("./useData/forLLM_data/company(Food)_LaLo.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:

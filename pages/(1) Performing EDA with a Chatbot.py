@@ -496,7 +496,7 @@ elif selectData == ":rainbow[Vacant data around Busan's three major ports]":
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/vacancy_locationLaLo.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("./useData/forLLM_data/vacancy_location_LaLo.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:

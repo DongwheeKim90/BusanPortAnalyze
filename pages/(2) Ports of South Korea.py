@@ -514,7 +514,7 @@ with tab_3:
     (1) Data Source : https://www.nlic.go.kr/nlic/seaShipEtrypt.action <br>
     (2) Collected Data : Collected data to assess foreign vessel cargo volume arriving in South Korea (2010–Feb 2025).(대한민국에 입항한 외국선의 물동량을 파악하기 위해 2010년부터 2025년 2월까지의 데이터를 수집함.)<br>
     (3) Data Type : Structured Data(정형 데이터)<br>
-    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas<br>
+    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas, Plotly Express & Plotly Graph Objects<br>
     (5) Data Collection and Preprocessing Process
     ''',unsafe_allow_html=True)
     st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Collection (데이터 수집)</span>", unsafe_allow_html=True)

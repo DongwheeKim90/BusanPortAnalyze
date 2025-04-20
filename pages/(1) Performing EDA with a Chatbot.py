@@ -633,6 +633,130 @@ else:
                 
 expander = st.expander("Basic LLM Integration Code (using OpenAI API)")
 expander.code('''
+import os  # Import os module for accessing environment variables (환경 변수 접근을 위한 os 모듈)
+import streamlit as st  # Import Streamlit for interactive web interface (대화형 웹 인터페이스 제공을 위한 Streamlit 임포트)
+import matplotlib.pyplot as plt  # Import matplotlib (used for plotting) (시각화를 위한 matplotlib 임포트)
+import matplotlib.font_manager as fm  # Font manager for matplotlib (matplotlib 폰트 매니저 임포트)
+from dotenv import load_dotenv  # Load environment variables from a .env file (.env 파일에서 환경 변수 불러오기)
+from langchain_openai import ChatOpenAI  # OpenAI LLM interface via LangChain (LangChain 기반 OpenAI 언어모델 인터페이스)
+from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent  # LangChain agent for DataFrame (Pandas 데이터프레임 분석용 LangChain 에이전트)
+from langchain_core.prompts import ChatPromptTemplate  # Role-based prompt template generator (역할 기반 프롬프트 템플릿 생성)
+from langchain_core.output_parsers import StrOutputParser  # Simple string output parser (단순 문자열 반환 파서)
+
+# Set font for Korean display in matplotlib (matplotlib 한글 폰트 설정)
+plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows 기준 말굿 고딕 적용
+plt.rcParams['axes.unicode_minus'] = False  # Prevent broken minus sign (마이너스 부호 깨짐 방지)
+
+# Main chatbot function that processes user questions, runs LLM + EDA + Visualization
+# (LLM + 데이터프레임 분석 + 시각화를 통합한 메인 챗봇 함수)
+def importMyBot(x, userQuestion):
+    """
+    Parameters:
+    x : pd.DataFrame - DataFrame to analyze (분석할 데이터프레임)
+    userQuestion : str - User question or command (사용자 질문 또는 명령)
+
+    Returns:
+    str or None - Textual response or None if image is returned (텍스트 응답 또는 이미지 반환시 None)
+    """
+
+    # Load API key from .env (환경 변수에서 OpenAI API 키 로드)
+    load_dotenv()
+    OPENAI_API_KEY = os.getenv("openAI_myKey")
+
+    # Initialize LLM with gpt-4o-mini for cost-effective inference (gpt-4o-mini 모델 초기화)
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
+        temperature=1,
+        api_key=OPENAI_API_KEY
+    )
+
+    # Create chatbot personality and behavior prompt (챗봇 캐릭터 설정 및 응답 규칙 정의)
+    prompt = ChatPromptTemplate.from_messages([
+        {
+            "role": "system",
+            "content": '''
+            From now on, your name is Javis. You worked for the genius hero Iron Man Tony Stark and came to me after being hired.
+            Your job is to answer based on the user's tone, in their language, with integrity and precision.
+
+            Rules:
+            1. If you are asked a question in English, answer in English.
+            2. If you are asked a question in Korean, answer in Korean.
+            3. You must only provide aggregated and factual information about the data you have, and absolutely must not provide false information.
+            4. When expressing it numerically, only say the number.
+            5. If the user has questions that are not related to the data you have, guide them to use Google Search.
+            6. When the user asks about the data, talk about it based on basic EDA.
+            '''
+        },
+        {"role": "user", "content": "{input}"}
+    ])
+
+    # Combine prompt → LLM → output parser into a chain (프롬프트 → 모델 → 파서 체인 구성)
+    output_parser = StrOutputParser()
+    myChain = prompt | llm | output_parser
+
+    # Create a LangChain agent that can interact with the DataFrame using natural language
+    # (자연어를 이용해 데이터프레임과 상호작용하는 LangChain 에이전트 구성)
+    agent_data_executer = create_pandas_dataframe_agent(
+        llm=llm,
+        df=x,
+        agent_type="tool-calling",
+        verbose=True,
+        return_intermediate_steps=True,
+        allow_dangerous_code=True
+    )
+
+    # List of keywords to detect if the user is asking for visualization (시각화 요청 키워드 정의)
+    visualization_keywords = [
+        # English (영어)
+        "plot", "graph", "chart", "visualize", "display", "show", "draw", "render",
+        "hist", "bar", "line", "scatter", "pie", "map", "heatmap", "box", "area",
+        "bubble", "density", "distribution", "trend", "time series", "stacked", "plotly",
+        "matplotlib", "seaborn", "bokeh", "dash", "altair", "gantt", "treemap", "sunburst",
+
+        # Korean (한글)
+        "시각화", "그래프", "히스토그램", "막대그래프", "산점도", "파이차트", "선형그래프", "분포도", "상자그림",
+        "지도", "열지도", "밀도차트", "트렌드", "시계열", "누적그래프", "군집도", "트리맵", "선버스트", "비올린플롯"
+    ]
+
+    # Case 1: Visualization requested (시각화 요청 시)
+    if any(kw in userQuestion.lower() for kw in visualization_keywords):
+        response = agent_data_executer.invoke(userQuestion)  # 에이전트 실행
+        try:
+            visual_code = response["intermediate_steps"][0][0].tool_input["query"]  # 생성된 코드 추출
+            df = x.copy()  # 코드 내에서 사용될 df 정의
+
+            exec(visual_code)  # 시각화 코드 실행
+
+            # 시각화 결과를 이미지로 저장
+            import io
+            buf = io.BytesIO()
+            plt.savefig(buf, format="png")
+            buf.seek(0)
+
+            # 이미지 버퍼를 세션에 저장하여 Streamlit에서 렌더링
+            st.session_state.messages.append({
+                "role": "ai",
+                "type": "image",
+                "content": buf
+            })
+
+            return None  # 시각화는 텍스트 응답 없이 종료
+
+        except Exception as e:
+            return f"Error while executing visualization: {e}"  # 에러 핸들링
+
+    # Case 2: Data-related summary/EDA questions (EDA 질문일 경우)
+    elif any(kw in userQuestion.lower() for kw in [
+        "data", "column", "row", "mean", "sum", "describe", "데이터", "컬럼", "행", "열", "요약", "평균", "EDA"
+    ]):
+        result = agent_data_executer.invoke(userQuestion)  # 에이전트 실행
+        return result["output"]  # 결과 텍스트 반환
+
+    # Case 3: General character conversation (일반 캐릭터 응답)
+    else:
+        result = myChain.invoke({"input": userQuestion})  # 일반 챗봇 응답
+        return result  # 텍스트 반환
+
 import streamlit as st  # Import the Streamlit library (Streamlit 라이브러리 임포트)
 import pandas as pd  # Import the pandas library for data handling (데이터 처리를 위한 pandas 라이브러리 임포트)
 from setting_llm import importMyBot  # Import custom chatbot logic (사용자 정의 챗봇 로직 임포트)

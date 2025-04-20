@@ -40,7 +40,7 @@ if selectData == ":rainbow[Time series data on foreign vessel arrivals at ports 
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/raw_koreaAllHarbors.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("../useData/forLLM_data/raw_koreaAllHarbors.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -56,7 +56,7 @@ if selectData == ":rainbow[Time series data on foreign vessel arrivals at ports 
             # (대화 내역이 없는 경우, 첫 화면에 환영 이미지를 표시)
             if len(st.session_state.messages) == 0:
                 with st.container(height=350):
-                    st.image("./useImage/gptReady.png")  # Welcome image (환영 이미지)
+                    st.image("../useImage/gptReady.png")  # Welcome image (환영 이미지)
 
             else:
                 # If there are messages, render them inside a container
@@ -116,7 +116,7 @@ elif selectData == ":rainbow[Time series data on the number of vessel arrivals a
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/busanAllPorts_GTCount.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("../useData/forLLM_data/busanAllPorts_GTCount.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -132,7 +132,7 @@ elif selectData == ":rainbow[Time series data on the number of vessel arrivals a
             # (대화 내역이 없는 경우, 첫 화면에 환영 이미지를 표시)
             if len(st.session_state.messages) == 0:
                 with st.container(height=350):
-                    st.image("./useImage/gptReady.png")  # Welcome image (환영 이미지)
+                    st.image("../useImage/gptReady.png")  # Welcome image (환영 이미지)
 
             else:
                 # If there are messages, render them inside a container
@@ -192,7 +192,7 @@ elif selectData == ":rainbow[Location and address data of the three major ports 
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/busanThreeport_position.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("../useData/forLLM_data/busanThreeport_position.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -208,7 +208,7 @@ elif selectData == ":rainbow[Location and address data of the three major ports 
             # (대화 내역이 없는 경우, 첫 화면에 환영 이미지를 표시)
             if len(st.session_state.messages) == 0:
                 with st.container(height=350):
-                    st.image("./useImage/gptReady.png")  # Welcome image (환영 이미지)
+                    st.image("../useImage/gptReady.png")  # Welcome image (환영 이미지)
 
             else:
                 # If there are messages, render them inside a container
@@ -268,7 +268,7 @@ elif selectData == ":rainbow[Monthly and yearly data on the number of ship suppl
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/finish_prod_totalCountPrice_yearMonth.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("../useData/forLLM_data/finish_prod_totalCountPrice_yearMonth.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -284,7 +284,7 @@ elif selectData == ":rainbow[Monthly and yearly data on the number of ship suppl
             # (대화 내역이 없는 경우, 첫 화면에 환영 이미지를 표시)
             if len(st.session_state.messages) == 0:
                 with st.container(height=350):
-                    st.image("./useImage/gptReady.png")  # Welcome image (환영 이미지)
+                    st.image("../useImage/gptReady.png")  # Welcome image (환영 이미지)
 
             else:
                 # If there are messages, render them inside a container
@@ -344,7 +344,7 @@ elif selectData == ":rainbow[Meat company data related to shipping supplies]":
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/meat_company_LaLo.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("../useData/forLLM_data/meat_company_LaLo.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -360,7 +360,7 @@ elif selectData == ":rainbow[Meat company data related to shipping supplies]":
             # (대화 내역이 없는 경우, 첫 화면에 환영 이미지를 표시)
             if len(st.session_state.messages) == 0:
                 with st.container(height=350):
-                    st.image("./useImage/gptReady.png")  # Welcome image (환영 이미지)
+                    st.image("../useImage/gptReady.png")  # Welcome image (환영 이미지)
 
             else:
                 # If there are messages, render them inside a container
@@ -420,7 +420,7 @@ elif selectData == ":rainbow[Food company data related to shipping supplies]":
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/food_company_LaLo.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("../useData/forLLM_data/food_company_LaLo.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -436,7 +436,7 @@ elif selectData == ":rainbow[Food company data related to shipping supplies]":
             # (대화 내역이 없는 경우, 첫 화면에 환영 이미지를 표시)
             if len(st.session_state.messages) == 0:
                 with st.container(height=350):
-                    st.image("./useImage/gptReady.png")  # Welcome image (환영 이미지)
+                    st.image("../useImage/gptReady.png")  # Welcome image (환영 이미지)
 
             else:
                 # If there are messages, render them inside a container
@@ -496,7 +496,7 @@ elif selectData == ":rainbow[Vacant data around Busan's three major ports]":
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/vacancy_locationLaLo.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("../useData/forLLM_data/vacancy_locationLaLo.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -512,7 +512,7 @@ elif selectData == ":rainbow[Vacant data around Busan's three major ports]":
             # (대화 내역이 없는 경우, 첫 화면에 환영 이미지를 표시)
             if len(st.session_state.messages) == 0:
                 with st.container(height=350):
-                    st.image("./useImage/gptReady.png")  # Welcome image (환영 이미지)
+                    st.image("../useImage/gptReady.png")  # Welcome image (환영 이미지)
 
             else:
                 # If there are messages, render them inside a container
@@ -571,7 +571,7 @@ elif selectData == ":rainbow[Time series data on vessel dwell time by shipping c
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/SinhangSchedule_rawData.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("../useData/forLLM_data/SinhangSchedule_rawData.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:
@@ -587,7 +587,7 @@ elif selectData == ":rainbow[Time series data on vessel dwell time by shipping c
             # (대화 내역이 없는 경우, 첫 화면에 환영 이미지를 표시)
             if len(st.session_state.messages) == 0:
                 with st.container(height=350):
-                    st.image("./useImage/gptReady.png")  # Welcome image (환영 이미지)
+                    st.image("../useImage/gptReady.png")  # Welcome image (환영 이미지)
 
             else:
                 # If there are messages, render them inside a container

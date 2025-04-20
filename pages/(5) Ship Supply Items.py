@@ -651,7 +651,7 @@ with tab_1:
 
     # Display the map with all company markers and radius overlays
     # 모든 회사 위치 마커 및 시각적 원이 포함된 지도를 출력함
-    st_folium(targetArea, width=1500, height=600, key="kr_pdCompany_possition")
+    st_folium(targetArea, width=1500, height=600, key="kr_pdCompany_position_")
 
 with tab_2:
     st.markdown("""
@@ -1283,4 +1283,4 @@ with tab_2:
 
     # Display the map with all company markers and radius overlays
     # 모든 회사 위치 마커 및 시각적 원이 포함된 지도를 출력함
-    st_folium(targetArea, width=1500, height=600, key="kr_pdCompany_possition")
+    st_folium(targetArea, width=1500, height=600, key="kr_pdCompany_position")

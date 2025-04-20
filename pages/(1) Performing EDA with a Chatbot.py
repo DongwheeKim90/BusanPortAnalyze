@@ -12,12 +12,14 @@ st.subheader("ChatBot for EDA and Analytics 🤖")
 selectData = st.radio(
     "Select the data you want ChatBot to analyze with EDA.",  # 라디오 버튼 안내 문구
     [
-        ":rainbow[Time series data on shipping companies/cargo volumes by port in South Korea]",
-        ":rainbow[Time series data on shipping companies and cargo volumes entering the three major ports of Busan, South Korea]",
-        ":rainbow[Annual sales amount and number of sales data for pre-sale items]",
+        ":rainbow[Time series data on foreign vessel arrivals at ports across South Korea]",
+        ":rainbow[Time series data on the number of vessel arrivals and cargo throughput at the three major ports in Busan]",
+        ":rainbow[Location and address data of the three major ports in Busan]",
+        ":rainbow[Monthly and yearly data on the number of ship supplies sales and sales amount]",
         ":rainbow[Meat company data related to shipping supplies]",
         ":rainbow[Food company data related to shipping supplies]",
         ":rainbow[Vacant data around Busan's three major ports]",
+        ":rainbow[Time series data on vessel dwell time by shipping company at Busan New Port]",
     ]
 )
 

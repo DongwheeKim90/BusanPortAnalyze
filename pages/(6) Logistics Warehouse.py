@@ -145,7 +145,7 @@ with tab_1:
         ).add_to(targetArea)
 
     # ✅ 지도 출력은 for문 바깥에서 단 1번만 실행
-    st_folium(targetArea, use_container_width=True, key="vacancy_kr")
+    st_folium(targetArea, use_container_width=True, key="vacancy_en")
 
     st.subheader("Conclusion", anchor=False)
 

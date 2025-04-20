@@ -225,7 +225,7 @@ with tab_1:
             title="Year",  # x축 제목
             dtick=1        # x축 눈금 간격 1년 단위
         ),
-        yaxis_title="Number of ship",
+        yaxis_title="GT(Gross Tonnage)",
         legend=dict(
             bordercolor="grey",
             borderwidth=0.5
@@ -425,59 +425,8 @@ with tab_1:
     st.markdown('''
     For the entire Busan Port (including all three ports), we observed a <span style='color:orange; font-weight:bold; font-size:20px;'>decreasing trend in the number of ship arrivals</span>,
     but a <span style='color:orange; font-weight:bold; font-size:20px;'>rising trend in cargo volume</span>.
-    Accordingly, we conducted a correlation analysis and calculated the p-value between ship arrivals and cargo volume.
     ''', unsafe_allow_html=True)
-    with st.container(border=True):
-        st.markdown('''
-        <span style='color:orange; font-weight:bold; font-size:15px;'>Correlation Coefficient</span>:
-        The correlation coefficient quantifies the degree to which two continuous variables change together.
-        Typically, the <span style='color:orange; font-weight:bold; font-size:15px;'>Pearson correlation coefficient</span> is used.
-        <span style='color:white; font-weight:bold; font-size:15px;'>(+1: perfect positive correlation / 0: no correlation / -1: perfect negative correlation)</span><br>
 
-        <span style='color:orange; font-weight:bold; font-size:15px;'>P-value</span>:
-        The p-value indicates the probability that the observed correlation occurred by chance, assuming no actual correlation exists between the variables.
-        <span style='color:white; font-weight:bold; font-size:15px;'>(p < 0.05: the correlation is statistically significant → reliable / p ≥ 0.05: the correlation may have occurred by chance and is not statistically significant)</span>
-        ''', unsafe_allow_html=True)
-
-    # 1. 필요한 열만 선택
-    selected_cols = ["Ship Count", "GT(Gross Tonnage)"]
-    filtered_df = totalBusan_visual[selected_cols]
-
-    # 2. 상관계수 계산
-    corr_matrix = filtered_df.corr(numeric_only=True)
-
-    # 3. 히트맵 생성
-    fig_corr = px.imshow(
-        corr_matrix,
-        text_auto=True,
-        color_continuous_scale="RdBu",
-        aspect="auto"
-    )
-
-    # 4. 레이아웃 설정
-    fig_corr.update_layout(
-        title=dict(
-            text="Busan Port: Correlation Between Ship Arrivals and Cargo Volume",
-            font=dict(size=20, color="white"),
-            x=0.3
-        ),
-        width=500,
-        height=500,
-        coloraxis_colorbar=dict(title="상관계수")
-    )
-
-    # 5. Streamlit에 출력
-    st.plotly_chart(fig_corr, use_container_width=True, key="corr_busan_en")
-
-    scaler=MinMaxScaler()
-    ship_stayed_scaled=pd.DataFrame(
-        scaler.fit_transform(totalBusan_visual.copy()),
-        columns=totalBusan_visual.columns
-    )
-
-    corr=stats.pearsonr(totalBusan_visual['Ship Count'],
-                        totalBusan_visual['GT(Gross Tonnage)'])
-    st.subheader(f'Correlation coefficient : {round(corr[0],3)} / P-value : {round(corr[1],3)}', anchor=False)
 
 with tab_2:
     st.subheader("부산 항구", anchor=False)
@@ -684,7 +633,7 @@ with tab_2:
             title="Year",  # x축 제목
             dtick=1        # x축 눈금 간격 1년 단위
         ),
-        yaxis_title="Number of ship",
+        yaxis_title="GT(Gross Tonnage)",
         legend=dict(
             bordercolor="grey",
             borderwidth=0.5
@@ -878,52 +827,5 @@ with tab_2:
     st.plotly_chart(df_busanWeight, key="trend_shipWeight_kr")
 
     st.markdown('''
-    부산항구(3개 항구) 전체 기준으로 입항하는 <span style='color:orange; font-weight:bold; font-size:20px;'>배의 수는 감소하는 추세</span>지만 입항되는 <span style='color:orange; font-weight:bold; font-size:20px;'>물동량은 상승 추세</span>라는 것을 확인 할 수 있었습니다. 이에 따라 입항 배 개수와 물동량에 대하여 상관관계 분석 및 P-Value를 구하였습니다.
+    부산항구(3개 항구) 전체 기준으로 입항하는 <span style='color:orange; font-weight:bold; font-size:20px;'>배의 수는 감소하는 추세</span>지만 입항되는 <span style='color:orange; font-weight:bold; font-size:20px;'>물동량은 상승 추세</span>라는 것을 확인 할 수 있었습니다.
     ''', unsafe_allow_html=True)
-
-    with st.container(border=True):
-        st.markdown('''
-        <span style='color:orange; font-weight:bold; font-size:15px;'>상관계수</span> : 상관계수는 두 연속형 변수 간에 한 변수가 증가할 때 다른 변수가 어떻게 변화하는지를 수치로 나타내는 지표입니다. 일반적으로 <span style='color:orange; font-weight:bold; font-size:15px;'>피어슨 상관계수(Pearson correlation coefficient)</span>를 사용합니다.<span style='color:white; font-weight:bold; font-size:15px;'>(+1 : 완벽한 양의 상관관계 / 0 : 상관없음 / -1 : 완벽한 음의 상관관계)</span><br>
-        <span style='color:orange; font-weight:bold; font-size:15px;'>유의확률</span> : P-value는 관측된 상관계수가 실제로는 두 변수 간에 아무런 상관이 없을 때에도 우연히 나타날 확률을 의미합니다. <span style='color:white; font-weight:bold; font-size:15px;'>(p < 0.05: 상관계수가 통계적으로 유의함 → 신뢰 가능 / p ≥ 0.05: 상관관계가 우연일 수 있어 유의하지 않음)</span>
-        ''', unsafe_allow_html=True)
-
-
-    # 1. 필요한 열만 선택
-    selected_cols = ["Ship Count", "GT(Gross Tonnage)"]
-    filtered_df = totalBusan_visual[selected_cols]
-
-    # 2. 상관계수 계산
-    corr_matrix = filtered_df.corr(numeric_only=True)
-
-    # 3. 히트맵 생성
-    fig_corr = px.imshow(
-        corr_matrix,
-        text_auto=True,
-        color_continuous_scale="RdBu",
-        aspect="auto"
-    )
-
-    # 4. 레이아웃 설정
-    fig_corr.update_layout(
-        title=dict(
-            text="Busan Port: Correlation Between Ship Arrivals and Cargo Volume",
-            font=dict(size=20, color="white"),
-            x=0.3
-        ),
-        width=500,
-        height=500,
-        coloraxis_colorbar=dict(title="상관계수")
-    )
-
-    # 5. Streamlit에 출력
-    st.plotly_chart(fig_corr, use_container_width=True, key="corr_busan_kr")
-
-    scaler=MinMaxScaler()
-    ship_stayed_scaled=pd.DataFrame(
-        scaler.fit_transform(totalBusan_visual.copy()),
-        columns=totalBusan_visual.columns
-    )
-
-    corr=stats.pearsonr(totalBusan_visual['Ship Count'],
-                        totalBusan_visual['GT(Gross Tonnage)'])
-    st.subheader(f'상관계수 : {round(corr[0],3)} / 유의확률 : {round(corr[1],3)}', anchor=False)

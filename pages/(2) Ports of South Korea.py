@@ -259,12 +259,6 @@ with tab_1:
     # Streamlit에 시각화 출력
     st.plotly_chart(fig_busan, use_container_width=True, key="en_busan_monthly")
 
-    st.markdown("""
-    Although the <span style='font-weight:bold; font-size:20px;'>number of foreign ships entering annually is decreasing</span>,
-    cargo volume shows a trend of increasing.<br>
-    To provide objective judgment and clear analysis, we conducted a <span style='color:orange; font-weight:bold; font-size:20px;'>correlation analysis</span> and visualized it as a heatmap.
-    """, unsafe_allow_html=True)
-
 with tab_2:
     st.markdown("""
     <span style='font-weight:bold; font-size:20px;'>대한민국</span>은 원자재와 부품을 수입해 조립·가공한 뒤 고부가가치 제품으로 재수출하는 가공무역 중심의 산업 구조를 갖추고 있으며
@@ -514,7 +508,3 @@ with tab_2:
 
     # Streamlit에 시각화 출력
     st.plotly_chart(fig_busan, use_container_width=True, key="kr_busan_monthly")
-
-    st.markdown("""
-    년도별 입항된 <span style='font-weight:bold; font-size:20px;'>외국선은 감소하는 추세임에도 불구하고 물동량은 점차 증가</span>하는 것으로 보여졌습니다.<br>객관적인 판단과 명확한 분석을 위해 <span style='color:orange; font-weight:bold; font-size:20px;'>상관관계 분석</span>을 진행하였고 이를 히트맵으로 구현했습니다.
-    """, unsafe_allow_html=True)

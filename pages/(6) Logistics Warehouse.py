@@ -18,12 +18,9 @@ with tab_1:
     Previously, we conducted an analysis covering <span style='color:orange; font-weight:bold; font-size:20px;'>correlation with potential customers, product selection based on annual ship supply demand, and the identification of companies dealing with those products</span> for building an online ship supply platform.
     In this section, we performed a <span style='color:white; font-weight:bold; font-size:20px;'>visual analysis of vacancy data</span>.
     But why did we collect and analyze vacancy data in the first place?
-
     We assumed that if an online ship supply platform is launched, it would be important for foreign crew members to be able to <span style='color:white; font-weight:bold; font-size:20px;'>pick up their ordered products near the port during embarkation or disembarkation</span>.
     This would help <span style='color:orange; font-weight:bold; font-size:20px;'>crew members plan their time more efficiently and make the most of their stay</span>.
-
     Based on this rationale, we collected and visualized vacancy data around <span style='color:orange; font-weight:bold; font-size:20px;'>the three major ports of Busan (New Port, North Port, and Gamcheon Port)</span>.
-
     <br><span style='color:red; font-weight:bold; font-size:15px;'>(* Due to confidentiality policies of real estate agencies, detailed vacancy addresses and building names were not publicly available. Therefore, we gathered, processed, and visualized data by searching areas near the three major port addresses.)</span>
     """, unsafe_allow_html=True)
 
@@ -163,7 +160,7 @@ with tab_2:
     온라인 선용품 쇼핑몰이 운영된다면, 외국 선원들이 <span style='color:white; font-weight:bold; font-size:20px;'>승선 또는 하선 시 항구 인근에서 제품을 직접 수령</span>할 수 있도록 하는 것이 중요하다고 판단했습니다.
     이는 <span style='color:orange; font-weight:bold; font-size:20px;'>선원들이 보다 효율적으로 시간 계획을 세우고, 체류 중 다양한 활동을 하는 데 도움</span>이 될 수 있습니다.
     이에 따라, 우리는 <span style='color:orange; font-weight:bold; font-size:20px;'>부산의 3대 항구(신항, 북항, 감천항)</span>를 중심으로 인근 지역의 공실 데이터를 수집하고, 아래와 같이 시각화하였습니다.
-    <br><span style='color:red; font-weight:bold; font-size:15px;'>("데이터 출처에서 부동산 중개소의 영업관련 기밀로 공실관련 빌딩명, 공실 세부주소를 공개하지 않아, 3대 항구별 주소 입력 후 그 인근에 검색되는 데이터를 수집/가공/시각화 했습니다.")</span>
+    <br><span style='color:red; font-weight:bold; font-size:15px;'>(데이터 출처에서 부동산 중개소의 영업관련 기밀로 공실관련 빌딩명, 공실 세부주소를 공개하지 않아, 3대 항구별 주소 입력 후 그 인근에 검색되는 데이터를 수집/가공/시각화 했습니다.)</span>
     """, unsafe_allow_html=True)
 
     vacancyData = pd.read_csv("./useData/finishPrepro/vacancy_locationLaLo.csv", encoding="utf-8-sig")

@@ -293,7 +293,7 @@ with tab_3:
     (1) Data Source : "https://new.land.naver.com/offices?ms=35.087642,128.8114855,16&a=SG&e=RETAIL&ad=true", "https://new.land.naver.com/offices?ms=35.094507,128.835046,16&a=SG&e=RETAIL&ad=true", "https://new.land.naver.com/offices?ms=35.120913,129.0412781,17&a=SG&e=RETAIL&ad=true", "https://new.land.naver.com/offices?ms=35.081925,128.987775,16&a=SG&e=RETAIL&ad=true" <br>
     (2) Collected Data : To collect vacancy data of warehouses used for storing ship stores and supplies.(선용품 및 선박용 물품 보관을 위한 창고의 공실 데이터를 수집하기 위함.)<br>
     (3) Data Type : Structured Data(정형 데이터)<br>
-    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas<br>
+    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas, Plotly Express & Plotly Graph Objects<br>
     (5) Data Collection and Preprocessing Process
     ''',unsafe_allow_html=True)
     st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Collection (데이터 수집)</span>", unsafe_allow_html=True)

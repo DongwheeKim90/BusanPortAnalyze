@@ -7,7 +7,7 @@ st.set_page_config(layout="wide")
 
 st.title("Vessel Dwell Time Analysis by Shipping Company", anchor=False)
 
-tab_1, tab_2, tab_3 = st.tabs(["Analysis Process(EN)", "Analysis Process(KR)", "Data Prep&EDA"])
+tab_1, tab_2, tab_3 = st.tabs(["Analysis Process(EN)", "Analysis Process(KR)", "Data Preprocessing"])
 
 with tab_1:
     st.markdown('''

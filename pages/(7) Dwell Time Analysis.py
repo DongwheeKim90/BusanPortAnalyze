@@ -553,7 +553,7 @@ with tab_3:
         (1) Data Source : "https://www.pnitl.com/infoservice/vessel/vslScheduleList.jsp"<br>
         (2) Collected Data : Collecting Vessel Dwell Time Data for Shipping Companies at Busan New Port(부산 신항항구에 입항하는 선사의 체류시간 데이터 수집)<br>
         (3) Data Type : Structured Data(정형 데이터)<br>
-        (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas<br>
+        (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas, Plotly Express & Plotly Graph Objects<br>
         (5) Data Collection and Preprocessing Process
         ''',unsafe_allow_html=True)
         st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Collection (데이터 수집)</span>", unsafe_allow_html=True)

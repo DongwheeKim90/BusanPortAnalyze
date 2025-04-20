@@ -268,7 +268,7 @@ elif selectData == ":rainbow[Monthly and yearly data on the number of ship suppl
 
     with dataArea:
         with st.container(height=450):
-            readData = pd.read_csv("./useData/forLLM_data/finish_prod_totalCountPrice_yearMonth.csv", encoding="utf-8-sig")
+            readData = pd.read_csv("./useData/forLLM_data/prod_totalCountPrice_yearMonth.csv", encoding="utf-8-sig")
             st.dataframe(readData, use_container_width=True, hide_index=True)
 
     with chatBotArea:

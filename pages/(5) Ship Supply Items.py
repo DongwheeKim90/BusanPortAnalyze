@@ -1284,3 +1284,321 @@ with tab_2:
     # Display the map with all company markers and radius overlays
     # 모든 회사 위치 마커 및 시각적 원이 포함된 지도를 출력함
     st_folium(targetArea, width=1500, height=600, key="kr_pdCompany_position")
+
+with tab_3:
+    st.markdown('''
+    (1) Data Source : "https://dart.fss.or.kr/dsae001/main.do#none" <br>
+    (2) Collected Data : Collect corporate data related to ship supplies, especially companies dealing with meat and food.(선용품 품목 관련, 특히 육류 및 식품을 취급하는 기업 정보 데이터 수집)<br>
+    (3) Data Type : Structured Data(정형 데이터)<br>
+    (4) Technologies Used : Selenium, BeautifulSoup(bs4), Pandas<br>
+    (5) Data Collection and Preprocessing Process
+    ''',unsafe_allow_html=True)
+    st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Collection (데이터 수집)</span>", unsafe_allow_html=True)
+    st.video("./useData/prodcompany.mp4")
+    st.code('''
+    # Author: Dongwhee Kim
+    # Date: 2025-04-12
+    # Description: Selenium-based scraper for extracting meat and food distribution company information from the DART system.
+
+    from bs4 import BeautifulSoup  # Import BeautifulSoup for HTML parsing (HTML 파싱을 위한 BeautifulSoup 임포트)
+    import pandas as pd  # Import pandas for data analysis (데이터 분석을 위한 pandas 임포트)
+    import requests as req  # Import requests for HTTP requests (HTTP 요청을 위한 requests 임포트)
+
+    from selenium import webdriver  # Import the Selenium WebDriver module (Selenium WebDriver 모듈 임포트)
+    from selenium.webdriver.chrome.service import Service  # Import the Chrome driver service manager (Chrome 드라이버 서비스 매니저 임포트)
+    from selenium.webdriver.common.by import By  # Import locator strategies (요소 탐색 전략 클래스 임포트)
+    from selenium.webdriver.support.ui import WebDriverWait  # Import explicit wait utility (명시적 대기를 위한 WebDriverWait 임포트)
+    from selenium.webdriver.support import expected_conditions as EC  # Import expected conditions (기대 조건 클래스 임포트)
+    from selenium.webdriver.common.keys import Keys  # Import keyboard key constants (키보드 키 입력 상수 임포트)
+    from selenium.webdriver import ActionChains  # Import for advanced user interactions (고급 사용자 동작을 위한 ActionChains 임포트)
+
+    import time  # Import time module for delays (지연을 위한 time 모듈 임포트)
+    import re  # Import regular expressions for text processing (정규표현식 처리를 위한 re 모듈 임포트)
+
+    # Set Chrome options (크롬 옵션 설정)
+    myOption = webdriver.ChromeOptions()
+    myOption.add_argument("no-sandbox")  # Disable sandbox mode for Linux environments (리눅스 환경 등에서 샌드박스 비활성화)
+
+    # Set path to Chrome driver (크롬 드라이버 경로 지정)
+    myChrome = Service("../autoDriver/chromedriver.exe")
+
+    # Launch Chrome browser (크롬 브라우저 실행)
+    myChrome = webdriver.Chrome(service=myChrome, options=myOption)
+
+    # Maximize browser window (브라우저 창 최대화)
+    myChrome.maximize_window()
+
+    # Set explicit wait of 3 seconds (3초 명시적 대기 설정)
+    waitTime = WebDriverWait(myChrome, 3)
+
+    # Define BS4 single selector function (BS4 단일 선택자 함수 정의)
+    def bs4_find(value):
+        return mysoup.select_one(value)  # Return first matched element (첫 번째 일치하는 요소 반환)
+
+    # Define BS4 multiple selector function (BS4 다중 선택자 함수 정의)
+    def bs4_finds(value):
+        return mysoup.select(value)  # Return all matched elements (모든 일치하는 요소 반환)
+
+    # Define Selenium single element find function (Selenium 단일 요소 탐색 함수 정의)
+    def selenium_find(value):
+        return waitTime.until(EC.presence_of_element_located((By.CSS_SELECTOR, value)))  # CSS 셀렉터로 단일 요소 대기 후 반환
+
+    # Define Selenium multiple element find function (Selenium 다중 요소 탐색 함수 정의)
+    def selenium_finds(value):
+        return waitTime.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, value)))  # CSS 셀렉터로 다중 요소 대기 후 반환
+
+    # Access the DART business info page (DART 업종정보 페이지 접속)
+    myUrl = "https://dart.fss.or.kr/dsae001/main.do#none"
+    myChrome.get(myUrl)  # Load the URL (URL 로드)
+    time.sleep(10)  # Wait for the page to load completely (페이지 완전히 로드되도록 대기)
+    print(f"{myUrl} 접속완료")  # Print confirmation (접속 확인 출력)
+
+    # Step 1: Select 'Business Category' tab (1단계: 업종별 탭 클릭)
+    selenium_find("li#businessTab").click()  # Click '업종별' 탭
+    print("업종별 클릭")
+    time.sleep(3)  # Wait for the category tree to appear (카테고리 트리 표시될 때까지 대기)
+
+    # Click tree icons to expand category (업종별 항목 펼치기)
+    selenium_finds("i.jstree-icon.jstree-ocl")[7].click()  # Click 8th node (8번째 노드 클릭)
+    time.sleep(2)
+    selenium_finds("i.jstree-icon.jstree-ocl")[9].click()  # Click 10th node (10번째 노드 클릭)
+    time.sleep(2)
+    selenium_finds("i.jstree-icon.jstree-ocl")[12].click()  # Click 13th node (13번째 노드 클릭)
+    time.sleep(2)
+    selenium_finds("i.jstree-icon.jstree-ocl")[14].click()  # Click 15th node (15번째 노드 클릭)
+    time.sleep(2)
+
+    # Click specific industry: '육류 가공식품 도매업' (해당 업종 클릭)
+    myChrome.find_element(By.XPATH, "//a[contains(., '육류 가공식품 도매업')]").click()
+    time.sleep(2)  # Wait after selection (선택 후 대기)
+
+    # Lists for storing company info (기업 정보 저장용 리스트 선언)
+    info_list = list()
+    category_list = list()
+    companyNM_list = list()
+    companyOwner_list = list()
+    corporate_Registration_list = list()
+    business_Registration_list = list()
+    companyAddress_list = list()
+    companyCP_list = list()
+
+    # Start pagination and data scraping (페이지 순회 및 데이터 수집 시작)
+    page_button_len = myChrome.find_elements(By.XPATH, '//*[@id="listContents"]/div[2]/div[2]/ul/li/a')  # Find page buttons (페이지 버튼 찾기)
+
+    if page_button_len:
+        for v in range(len(page_button_len)):
+            v += 1
+            page_button = myChrome.find_element(By.XPATH, f'//*[@id="listContents"]/div[2]/div[2]/ul/li[{v}]/a')
+            page_button.click()
+            print(f"{v} 페이지 클릭")
+            time.sleep(10)
+
+            meat_company_list = selenium_finds("span.nobr1")
+            for v in meat_company_list:
+                v.click()
+                time.sleep(5)
+
+                for v in range(0, 16):
+                    v += 1
+                    if v == 14:
+                        category = myChrome.find_element(By.XPATH , f"//*[@id='corpDetailTabel']/tbody/tr[{v}]/td").text
+                        category_list.append(category)
+                    elif v == 1:
+                        name = myChrome.find_element(By.XPATH , f"//*[@id='corpDetailTabel']/tbody/tr[{v}]/td").text
+                        companyNM_list.append(name)
+                    elif v == 5:
+                        owner = myChrome.find_element(By.XPATH , f"//*[@id='corpDetailTabel']/tbody/tr[{v}]/td").text
+                        companyOwner_list.append(owner)
+                    elif v == 7:
+                        crNum = myChrome.find_element(By.XPATH , f"//*[@id='corpDetailTabel']/tbody/tr[{v}]/td").text
+                        corporate_Registration_list.append(crNum)
+                    elif v == 8:
+                        brNum = myChrome.find_element(By.XPATH , f"//*[@id='corpDetailTabel']/tbody/tr[{v}]/td").text
+                        business_Registration_list.append(brNum)
+                    elif v == 9:
+                        address = myChrome.find_element(By.XPATH , f"//*[@id='corpDetailTabel']/tbody/tr[{v}]/td").text
+                        companyAddress_list.append(address)
+                    elif v == 12:
+                        contact = myChrome.find_element(By.XPATH , f"//*[@id='corpDetailTabel']/tbody/tr[{v}]/td").text
+                        companyCP_list.append(contact)
+                    time.sleep(5)
+
+    # Collapse current category and go to next (현재 업종 닫고 다음 업종으로 이동)
+    selenium_finds("i.jstree-icon.jstree-ocl")[14].click()
+    time.sleep(2)
+    selenium_finds("i.jstree-icon.jstree-ocl")[13].click()
+    time.sleep(2)
+    myChrome.find_element(By.XPATH, "//a[contains(., '육류 도매업')]").click()
+    time.sleep(2)
+
+    # After scraping, create final DataFrame for meat companies (육류 도매업 최종 데이터프레임 생성)
+    meat_companyKR = pd.DataFrame({
+        "Company category" : category_list,
+        "Comapany name" : companyNM_list,
+        "CEO" : companyOwner_list,
+        "Corporate registration number" : corporate_Registration_list,
+        "Business registration number" : business_Registration_list,
+        "Address" : companyAddress_list,
+        "Contact point" : companyCP_list
+    })
+
+    meat_companyKR.head()
+    print(meat_companyKR.shape)
+    meat_companyKR.to_csv("../useData/raw_meat_companyKR.csv", encoding="utf-8-sig", index=False)
+
+    # food_companyKR = pd.DataFrame({...}) # 동일 방식으로 생성 가능
+
+    meat_companyKR = pd.read_csv("../useData/raw_meat_companyKR.csv", encoding="utf-8-sig")
+    meat_companyKR.to_csv("../useData/raw_meat_companyKR.csv", encoding="utf-8-sig", index=False)
+
+    print("크롤링 및 저장 완료")
+            ''')
+    st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Preprocessing (데이터 가공)</span>", unsafe_allow_html=True)
+    st.code('''
+    # ------------------------------------------------------------------------------
+    # Author: DongWhee Kim
+    # Date: 2025-04-12
+    # Description: Preprocessing and visualization of monthly product needs data
+    #              including total counts, prices, and trend analysis of major items.
+    # ------------------------------------------------------------------------------
+
+    import pandas as pd                      # For data manipulation (데이터 처리용)
+    import plotly.express as px              # For scatter plots and regression lines (산점도 및 추세선)
+    import plotly.graph_objects as go        # For grouped bar charts (그룹형 막대그래프)
+    import os                                # For file handling (파일 읽기)
+
+    # Define month and field combinations for renaming columns (월 + 필드명 조합 정의)
+    field_list = [" : total count", ": total price"]
+    month_list = ['January', 'February', 'March', 'April', 'May', 'June', 
+                'July', 'August', 'September', 'October', 'November', 'December']
+
+    combined_field_list = [month + field for month in month_list for field in field_list]
+
+    # Function to clean strings and convert to int (쉼표, 공백 제거 후 정수형 변환)
+    def clean_and_convert_to_int(x):
+        return (
+            x.replace(r"[,　\s]", "", regex=True)  # Remove comma, full-width space, normal space
+            .fillna("0")                               # Fill NaN with 0
+            .astype(str)                               # Convert to string
+            .replace("", "0")                         # Replace empty strings with 0
+            .astype("int32")                          # Convert to int
+        )
+
+    # Function to build bar traces for a given dataframe and column list (막대그래프 요소 생성 함수)
+    def build_bar_traces(df, x_data, columns):
+        traces = []
+        for col in columns:
+            traces.append(
+                go.Bar(
+                    x=x_data,
+                    y=df[col],
+                    name=col,
+                    text=df[col],
+                    textposition="inside",
+                    texttemplate="%{text:,}"
+                )
+            )
+        return traces
+
+    # Function to create a trend scatter plot with regression line (회귀선 포함 산점도 생성 함수)
+    def create_trend_scatter(df, date_col, value_col, title, y_title):
+        fig = px.scatter(
+            df,
+            x=date_col,
+            y=value_col,
+            trendline="ols",
+            title=title
+        )
+        fig.update_traces(
+            line=dict(color="red", width=3, dash="solid"),
+            marker=dict(color="blue", size=6),
+            selector=dict(mode="lines")
+        )
+        fig.update_layout(
+            xaxis=dict(title="Date", tickformat="%Y-%m", tickangle=20),
+            yaxis=dict(title=y_title),
+            legend=dict(bordercolor="grey", borderwidth=0.5)
+        )
+        return fig
+
+    # Function to process trend data and return cleaned DataFrame with datetime (월별 추세용 데이터프레임 생성 함수)
+    def prepare_trend_data(df, year_col, month_col, value_col, new_col_name):
+        trend_df = df[[year_col, month_col, value_col]].copy()
+        trend_df.columns = ["year", "month", new_col_name]
+        trend_df = trend_df[trend_df["year"] != "2025"]  # Ensure year is string for comparison
+        trend_df[["year", "month"]] = trend_df[["year", "month"]].astype(str)
+        trend_df["date"] = pd.to_datetime(trend_df["year"] + "-" + trend_df["month"])
+        return trend_df[["date", new_col_name]]
+
+    # Function to annotate highest value in a bar chart (막대그래프에서 최고값에 주석 추가)
+    def add_max_annotation(fig, x_data, y_data, label_prefix):
+        max_index = y_data.idxmax()
+        max_value = y_data[max_index]
+        max_year = x_data[max_index]
+        fig.add_annotation(
+            x=max_year,
+            y=max_value,
+            text=f"{label_prefix} {max_value:,} in {max_year}",
+            showarrow=False,
+            font=dict(size=10, color="#fc7507"),
+            xanchor="center",
+            yanchor="top",
+            xshift=-50,
+            yshift=45,
+            bordercolor="#0e28ea",
+            borderwidth=1,
+            borderpad=4,
+            bgcolor="#0e28ea",
+            opacity=0.9
+        )
+        return fig
+
+    # Function to generate and show a bar chart for top N items (상위 N개 항목에 대한 막대그래프 시각화 함수)
+    def visualize_top_items(df, x_col, y_cols, title, y_title):
+        traces = build_bar_traces(df, df[x_col], y_cols)
+        fig = go.Figure(data=traces)
+        fig.update_layout(
+            barmode="group",
+            title=dict(text=title, x=0.5),
+            xaxis=dict(title=x_col),
+            yaxis_title=y_title,
+            legend=dict(bordercolor="grey", borderwidth=0.5)
+        )
+        return fig
+
+    # Trendline Visualization for Monthly Product Sales (월별 품목별 추세선 시각화 예시)
+    if __name__ == "__main__":
+        trend_data = pd.read_csv("../useData/finishPrepro/finish_prod_totalCountPrice_yearMonth.csv")
+
+        # Count Trends
+        trend_food = prepare_trend_data(trend_data, "years", "months", "count : 식품류", "Food")
+        trend_meat = prepare_trend_data(trend_data, "years", "months", "count : 육류 ", "Meat")
+        trend_alcohol = prepare_trend_data(trend_data, "years", "months", "count : 주류", "Alcohol")
+        trend_parts = prepare_trend_data(trend_data, "years", "months", "count : 선박부품", "Ship Parts")
+
+        fig_trend_food = create_trend_scatter(trend_food, "date", "Food", "Food Sales with Regression Trendline", "Count")
+        fig_trend_meat = create_trend_scatter(trend_meat, "date", "Meat", "Meat Sales with Regression Trendline", "Count")
+        fig_trend_alcohol = create_trend_scatter(trend_alcohol, "date", "Alcohol", "Alcohol Sales with Regression Trendline", "Count")
+        fig_trend_parts = create_trend_scatter(trend_parts, "date", "Ship Parts", "Ship Parts Sales with Regression Trendline", "Count")
+
+        fig_trend_food.show()
+        fig_trend_meat.show()
+        fig_trend_alcohol.show()
+        fig_trend_parts.show()
+
+        # Price Trends
+        trend_price_food = prepare_trend_data(trend_data, "years", "months", "price(KR) : 식품류", "Food")
+        trend_price_meat = prepare_trend_data(trend_data, "years", "months", "price(KR) : 육류 ", "Meat")
+        trend_price_alcohol = prepare_trend_data(trend_data, "years", "months", "price(KR) : 주류", "Alcohol")
+        trend_price_parts = prepare_trend_data(trend_data, "years", "months", "price(KR) : 선박부품", "Ship Parts")
+
+        fig_price_food = create_trend_scatter(trend_price_food, "date", "Food", "Food Sales Amount with Regression Trendline", "KRW")
+        fig_price_meat = create_trend_scatter(trend_price_meat, "date", "Meat", "Meat Sales Amount with Regression Trendline", "KRW")
+        fig_price_alcohol = create_trend_scatter(trend_price_alcohol, "date", "Alcohol", "Alcohol Sales Amount with Regression Trendline", "KRW")
+        fig_price_parts = create_trend_scatter(trend_price_parts, "date", "Ship Parts", "Ship Parts Sales Amount with Regression Trendline", "KRW")
+
+        fig_price_food.show()
+        fig_price_meat.show()
+        fig_price_alcohol.show()
+        fig_price_parts.show()
+    ''')

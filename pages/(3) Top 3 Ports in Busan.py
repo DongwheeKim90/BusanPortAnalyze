@@ -429,7 +429,7 @@ with tab_1:
 with tab_2:
     st.subheader("부산 항구", anchor=False)
     st.markdown('''
-                년도별 대한민국 항구에 대한 입항되는 외국선사의 수, 물동량에서 제일 높은 항구는 부산항이었습니다. 사실 부산은 3개로  <span style='color:orange; font-weight:bold; font-size:20px;'>신항, 북항, 감천항</span>이 주요 항구이며 대게, 이를 부산항이라고 부릅니다. 따라서 우리는 부산 3개 항구에 대한 입항 건수와 물동량에 대하여 데이터 수집 후 시각화 분석을 진행했습니다.
+                년도별 대한민국 항구에 대한 입항되는 외국선사의 수, 물동량에서 제일 높은 항구는 부산항이었습니다. 사실 부산은 3개로  <span style='color:orange; font-weight:bold; font-size:20px;'>신항, 북항, 감천항</span>이 주요 항구이며 대게, 이를 부산항이라고 부릅니다. 따라서 우리는 부산 3개 항구에 대한 입항 건수와 GT:Gross Tonge(선박부피+물동량인 선박 총 부피) 대하여 데이터 수집 후 시각화 분석을 진행했습니다.
                 ''', unsafe_allow_html=True)
 
     # Define map tile options
@@ -620,7 +620,7 @@ with tab_2:
     fig_2.update_layout(
         barmode="group", #항구별 막대를 표시화기위해 그룹화
         title=dict(
-            text="<b>Annual cargo volume</b> of Busan's three major ports",
+            text="<b>Annual GT(Gross Tonge) volume</b> of Busan's three major ports",
             x=0.3,
             y=0.9,
             font={
@@ -640,7 +640,7 @@ with tab_2:
     st.plotly_chart(fig_2, key="kr_3busan_weight")
 
     st.markdown('''
-                시각화 분석결과 년간 입항 배의 수가 많은 항구는 <span style='color:orange; font-weight:bold; font-size:20px;'>감천항</span>, 물동량이 많은 항구는 <span style='color:orange; font-weight:bold; font-size:20px;'>신항</span>이 1위를 차지했습니다. 우리는 이어서 3개 항구를 합친 부산항 전체에 대한 입항되는 배의 수와 물동량의 상관관계 및 추세를 파악할 수 있는 시각화 분석작업을 진행 했습니다.
+                시각화 분석결과 년간 입항 배의 수가 많은 항구는 <span style='color:orange; font-weight:bold; font-size:20px;'>감천항</span>, 물동량이 많은 항구는 <span style='color:orange; font-weight:bold; font-size:20px;'>신항</span>이 1위를 차지했습니다. 우리는 이어서 3개 항구를 합친 부산항 전체에 대한 입항되는 배의 수와 GT:Gross Tonge(선박부피+물동량으로 선박 총 부피)  상관관계 및 추세를 파악할 수 있는 시각화 분석작업을 진행 했습니다.
                 ''', unsafe_allow_html=True)
 
     totalBusan_visual = totalBusanWeight[["Year", "Ship Count", "GT(Gross Tonnage)"]].copy()
@@ -780,7 +780,7 @@ with tab_2:
         x=totalBusan_visual["Year"],
         y=totalBusan_visual["GT(Gross Tonnage)"],
         trendline="ols",
-        title="<b>Analyzing the Annual Cargo Volume Trend Entering</b> Busan Port",
+        title="<b>Analyzing the Annual GT(Gross Tonge) Volume Trend Entering</b> Busan Port",
         labels={
             "Year": "Year",
             "GT": "GT(Gross Tonnage)"
@@ -825,7 +825,7 @@ with tab_2:
     st.plotly_chart(df_busanWeight, key="trend_shipWeight_kr")
 
     st.markdown('''
-    부산의 3개 항구를 기준으로 분석한 결과, <span style='color:white; font-weight:bold; font-size:20px;'>입항하는 선박 수는 감소 추세인 반면, 입항 물동량은 오히려 증가하는 추세</span>를 보였습니다. 이는 <span style='color:orange; font-weight:bold; font-size:20px;'>해운 기반 유통의 특성상, 선사들이 운송 효율성을 높이기 위해 더 큰 규모의 카고선으로 교체 운영</span>했기 때문으로 해석할 수 있습니다.
+    부산의 3개 항구를 기준으로 분석한 결과, <span style='color:white; font-weight:bold; font-size:20px;'>입항하는 선박 수는 감소 추세인 반면, 입항 GT:Gross Tonge(선박부피+물동량으로 선박 총 부피)는 오히려 증가하는 추세</span>를 보였습니다. 이는 <span style='color:orange; font-weight:bold; font-size:20px;'>해운 기반 유통의 특성상, 선사들이 운송 효율성을 높이기 위해 더 큰 규모의 카고선으로 교체 운영</span>했기 때문으로 해석할 수 있습니다.
     ''', unsafe_allow_html=True)
 
 with tab_3:

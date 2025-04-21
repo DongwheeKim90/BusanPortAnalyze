@@ -20,7 +20,7 @@ with tab_1:
     st.subheader("Busan Ports", anchor=False)
 
     st.markdown('''
-    Foreign shipping companies most frequently enter Busan Port, which also handles the largest cargo throughput among all ports in Korea. In fact, Busan Port consists of three major sub-ports: <span style='color:orange; font-weight:bold; font-size:20px;'>SinHang Port, North Port, and Gamcheon Port</span>. Collectively, these are typically referred to as Busan Port.  
+    Foreign shipping companies most frequently enter Busan Port, which also handles the largest cargo throughput among all ports in Korea. In fact, Busan Port consists of three major sub-ports: <span style='color:orange; font-weight:bold; font-size:20px;'>SinHang Port, North Port and Gamcheon Port</span>. Collectively, these are typically referred to as Busan Port.  
     Therefore, we collected and visualized data on the number of vessel arrivals and Gross Tonnage (GT), which represents the total volume of a vessel (including both ship size and cargo capacity), for these three Busan sub-ports.
     ''', unsafe_allow_html=True)
 

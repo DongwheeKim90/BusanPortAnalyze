@@ -753,7 +753,7 @@ with tab_2:
     st.plotly_chart(fig, use_container_width=True,key="kr_allPD_needs")
 
     st.markdown("""
-    시각화 분석결과 판매건수에 있어 많이 판매되는 3개 품목은 <span style='color:orange; font-weight:bold; font-size:20px;'>주류, 고기, 술</span> 이었습니다. 위 시각화 그래프는 품목이 너무 많아 정확한 수치를 파악하는 데 제한되어 <span style='color:white; font-weight:bold; font-size:20px;'>많이 판매된 Top3 품목만</span>을 전처리하여 아래와 같이 재시각화 하였습니다.
+    시각화 분석결과 판매건수에 있어 많이 판매되는 3개 품목은 <span style='color:orange; font-weight:bold; font-size:20px;'>음식, 고기, 술</span> 이었습니다. 위 시각화 그래프는 품목이 너무 많아 정확한 수치를 파악하는 데 제한되어 <span style='color:white; font-weight:bold; font-size:20px;'>많이 판매된 Top3 품목만</span>을 전처리하여 아래와 같이 재시각화 하였습니다.
     """, unsafe_allow_html=True)
 
     yearsCountTop3 = yearsCount[["Food", "Meat", "Alcohol"]]

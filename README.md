@@ -1,41 +1,43 @@
-1. Project Overview
-The Busan Port Marketing Data Analysis Project was planned based on a meeting with officials from the Busan Port Authority in 2020. The main goal was to establish a data-driven strategy for attracting foreign shipping companies to Busan Port. From the perspective of the Busan Port Authority, this project proposes practical online services—such as an online ship supplies store and a customized sightseeing guide based on vessel dwell time—and conducts relevant data analysis to support these ideas.
+1. Project Summary
+This project is a data-driven marketing strategy analysis for revitalizing Busan Port, conducted from the perspective of the Busan Port Authority. It aims to propose and validate actionable services for foreign shipping companies using real-world port data and correlation analysis.
 
-2. Main Objectives
-2.1. Building an Online Ship Supplies Platform
-Analyzed annual sales volume and revenue data to identify key product categories
+2. Purpose
+2.1. Identify practical services to boost port utilization
+(e.g., online ship supplies store, tourism service based on dwell time)
+2.2. Support strategic planning with exploratory data analysis and visualization
+2.3. Enable data-informed decisions by port authorities and stakeholders
 
-Selected meat and food as the primary product categories based on consistent upward sales trends
+3. Main Features
+3.1. Time-Series Analysis
+Analyze annual trends in Gross Tonnage (GT) and Cargo Throughput (CT)
 
-Performed word cloud analysis using text data from SNS and blogs posted by foreign users
+Identify correlation between CT, GT, and vessel dwell time
 
-Visualized company and warehouse vacancy data to support distribution planning near Busan's ports
+3.2. Service Recommendation Logic
+Recommend tourism courses based on dwell time quartiles (short, medium, long stay)
 
-2.2. Providing Time-Based Tourism Information
-Designed custom tourism course recommendations based on vessel dwell time
+Estimate number of foreign crew members to support demand forecasting
 
-Grouped dwell times into short (24–42 hrs), medium (43–44 hrs), and long (45+ hrs) durations
+3.3. Online Ship Supply Market Insights
+Analyze historical product sales and trends
 
-Aimed to increase satisfaction and engagement of foreign shipping companies and crew members
+Conduct word cloud analysis using blog/SNS data
 
-3. Key Data Analysis
-Time-series analysis showed that both GT (Gross Tonnage) and CT (Cargo Throughput) are steadily increasing, while the number of ship arrivals is declining
+Visualize local vendor and warehouse vacancy data around Busan ports
 
-Correlation analysis results:
+3.4. EDA Support Chatbot
+Built with OpenAI + LangChain
 
-GT vs. CT: r = 0.5942, p = 0.0416
+Handles general conversation via LCEL
 
-CT vs. Dwell Time: r = 0.5105, p = 0.0
+Uses create_pandas_dataframe_agent for answering data-specific queries
 
-Estimated 244,395 to 290,790 foreign crew members arrive at Busan Port annually, based on average crew size and number of foreign vessel arrivals
+Provides basic metadata overview and visualizations of uploaded datasets
 
-4. Additional Feature: EDA Chatbot
-Implemented a chatbot to provide an overview of collected data before processing, including data types, structure, and basic visualizations
-
-Built using OpenAI and LangChain
-
-General conversation is handled using LCEL (LangChain Expression Language)
-
-Data-related questions are answered using the create_pandas_dataframe_agent
-
-Set a low temperature to minimize hallucinations in responses
+4. Key Libraries & Tools
+4.1. pandas, numpy – Data processing
+4.2. matplotlib, plotly – Visualization
+4.3. OpenAI, LangChain – EDA chatbot
+4.4. Streamlit – Web-based dashboard
+4.5. NLTK, wordcloud – Text analysis
+4.6. Selenium, BeautifulSoup – (Optional, for external data scraping)

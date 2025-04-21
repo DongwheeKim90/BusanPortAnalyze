@@ -329,8 +329,9 @@ with tab_2:
     col_9, col_10 = st.columns(2)
     with col_9:
         st.image("./useData/conclusion_img/residence_fourResult.png")
-    with col_10:
         st.image("./useData/conclusion_img/residence_fourResult_shipcompany.png")
+    with col_10:
+        st.image("./useData/conclusion_img/recommend_course.png")
     with st.container(border=True):
         st.markdown('''
             앞서 상관관계 분석 결과, <span style='color:Orange; font-weight:bold; font-size:16px;'>CT(Cargo Throughput, 물동량)이 증가할수록 선박의 체류시간도 함께 증가하는 경향</span>이 확인되었습니다.

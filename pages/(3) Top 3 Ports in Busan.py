@@ -672,7 +672,7 @@ with tab_2:
     # 전체 레이아웃 설정
     fig_3.update_layout(
         title={
-            "text": "<b>Annual ships and cargo volume</b> entering Busan Port",
+            "text": "<b>Annual ships and GT(Gross Tonge) volume</b> entering Busan Port",
             "x": 0.45,
             "y": 0.9,
             "font": {"size": 20, "color": "white"},

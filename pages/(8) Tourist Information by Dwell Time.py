@@ -3,6 +3,7 @@ import pandas as pd
 from dotenv import load_dotenv
 import os
 from tmapAPI.tmapAPI import *
+import nbformat
 
 st.set_page_config(layout='wide')
 
@@ -268,7 +269,7 @@ with tab2:
 
     if group:
 
-        st.markdown(f"### 🧭 {comment}")
+        st.markdown(f"### {comment}")
         # 투어 코스를 생성하고 session_state에 저장
         if st.button("여행 코스 생성하기"):
             st.session_state.tourCourse = get_stay_group_course(busanSpots, group)
@@ -283,25 +284,299 @@ with tab2:
             mode = "car" if transport_mode == "차량" else "peds"
 
             # 지도 출력 버튼: 선택된 이동 수단(mode)에 따라 경로 및 소요시간 정보 반영
-            if st.button("🗺️ 여행 경로 지도 보기"):
+            if st.button("여행 경로 지도 보기"):
                 # draw_route_from_tourCourse 함수 내부에서는 지정된 mode에 따라 T맵 API를
                 # 호출하여 차량 경로 또는 보행자 경로 데이터를 가져옵니다.
                 route_map, total_distance, total_time = draw_route_from_tourCourse(tour_df, tmap, mode=mode)
-                st.markdown(f"### 🛣️ 총 이동거리: **{total_distance} km**, 총 이동시간: **{total_time} 분**")
+                st.markdown(f"### 총 이동거리: **{total_distance} km**, 총 이동시간: **{total_time} 분**")
                 st.components.v1.html(route_map._repr_html_(), height=600)
         else:
             st.warning("먼저 '여행 코스 생성하기' 버튼을 눌러 코스를 생성해주세요.")
     else:
         st.warning("체류 시간이 24시간 이상일 때만 추천 코스를 제공해 드립니다.")
 
-
-    
-
-
-
-
-
-
-
 with tab3:
-    st.write('data prep&EDA')
+    st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Preprocessing (데이터 가공)</span>", unsafe_allow_html=True)
+    def jupyter_reader(path:str):
+        # 노트북 파일 열기
+        with open(path, "r", encoding="utf-8") as f:
+            notebook = nbformat.read(f, as_version=4)
+
+        # 코드 셀만 추출
+        code_cells = [cell['source'] for cell in notebook.cells if cell['cell_type'] == 'code']
+        code_content = '\n\n'.join(code_cells)
+        return code_content
+    codeSpots = jupyter_reader('./sourceCode/tourCourse.ipynb')
+    st.code(codeSpots)
+    st.code('''
+        # Author: DongWhee Kim
+        # Date: 2025-04-14
+        # Description: Quartile-Based Visualization of Vessel Dwell Time by Shipping Company (선사별 체류시간의 사분위 기반 시각화 작업)
+        # Import necessary libraries (필요한 라이브러리 임포트)
+        import pandas as pd  # DataFrame handling (데이터프레임 처리)
+        import plotly.express as px  # Interactive visualizations (인터랙티브 시각화)
+
+        # Load raw ship schedule data and remove index column (데이터 로드 및 인덱스 제거)
+        schedule = pd.read_csv("../useData/SinhangSchedule_rawData.csv", encoding="utf-8-sig")
+        schedule = schedule.iloc[:,1:]
+        schedule.head(5)
+
+        # Check data types and structure (데이터 타입 및 구조 확인)
+        schedule.info()
+        schedule.shape
+
+        # Define and apply datetime conversion function (형변환 함수 정의 및 적용)
+        def changeDateType(x):
+            changeDate = pd.to_datetime(x)
+            return changeDate
+
+        # Convert string columns to datetime (문자열 날짜 → datetime 형식)
+        schedule["Enter Time"] = changeDateType(schedule["Enter Time"])
+        schedule["Out Time"] = changeDateType(schedule["Out Time"])
+        schedule.info()
+
+        # Calculate time difference (날짜 차이 계산)
+        schedule["Day difference"] = schedule["Enter Time"] - schedule["Out Time"]
+        schedule.head()
+
+        # Split into days and hours (체류기간을 일과 시간으로 분리)
+        Dd_list = list(schedule["Day difference"])
+        Duration_days_list = list()
+        Duration_hourss_list = list()
+
+        for v in Dd_list:
+            v = str(v)
+            v_edit = v.replace(" ","").replace("days","").replace("-","").split("+")
+            Duration_days_list.append(v_edit[0])
+            Duration_hourss_list.append(v_edit[1])
+
+        # Add duration columns to DataFrame (체류기간 열 추가)
+        schedule["Duration days"] = Duration_days_list
+        schedule["Duration hours"] = Duration_hourss_list
+
+        # Calculate total stay duration in hours (총 체류시간 계산)
+        calculate_hour_list = list()
+        for v in schedule["Duration days"]:
+            v = int(v)
+            change_hour = v*24
+            calculate_hour_list.append(change_hour)
+
+        # Extract hours only from "Duration hours" (시간만 추출)
+        hourToInt = [v.split(":")[0] for v in schedule["Duration hours"]]
+
+        # Sum day-hours and hour-only to get total duration (총 시간 계산)
+        sumHour_list = [int(i) + int(v) for i,v in zip(calculate_hour_list, hourToInt)]
+        schedule["Total duration(Hours)"] = sumHour_list
+
+        # Print dataset summary (데이터셋 요약 출력)
+        print("==================================================")
+        print(schedule.info())
+        print("==================================================")
+        schedule.head()
+
+        # Create reduced DataFrame for analysis (분석용 컬럼만 선택)
+        schedule_duration = schedule[["Ship Company", "Total duration(Hours)"]].copy()
+        print(schedule_duration.info())
+
+        # Calculate average stay by shipping company (선사별 평균 체류시간 계산)
+        schedule_duration = schedule.groupby("Ship Company")["Total duration(Hours)"].mean()
+
+        # Separate values into lists (리스트로 분리 저장)
+        avg_shipName_list = list(schedule_duration.index)
+        avgTime_list = list(schedule_duration.values)
+
+        # Create summary DataFrame (요약 데이터프레임 생성)
+        avgDuration_ships = pd.DataFrame({
+            "Ship name": avg_shipName_list,
+            "Avg time": avgTime_list
+        })
+
+        # Sort descending and reset index (내림차순 정렬 및 인덱스 초기화)
+        avgDuration_ships = avgDuration_ships.sort_values(["Avg time"],ascending=False).reset_index().iloc[:,1:]
+        avgDuration_ships
+
+        # Select top 10 shipping companies by avg stay (평균 체류시간 상위 10개 선사)
+        avgDuration_ships_top10 = avgDuration_ships.iloc[:9,:]
+        avgDuration_ships_top10
+
+        # Summary statistics (요약 통계 확인)
+        schedule["Total duration(Hours)"].describe()
+
+        # Draw box plot (박스 플롯 시각화)
+        duration_fig = px.box(
+            schedule,
+            y="Total duration(Hours)",
+            title="Residence Time by Shipping Company",
+        )
+
+        # Layout customization (레이아웃 설정)
+        duration_fig.update_layout(
+            title=dict(
+                text="<b>Residence Time by Shipping Company</b>",
+                x=0.5,
+                xanchor='center',
+                font=dict(color="white")
+            ),
+            plot_bgcolor="black",
+            paper_bgcolor="black",
+            font=dict(color="white"),
+            xaxis=dict(
+                title=dict(text="Ship Company", font=dict(color="white")),
+                tickfont=dict(color="white")
+            ),
+            yaxis=dict(
+                title=dict(text="Total Duration (Hours)", font=dict(color="white")),
+                tickfont=dict(color="white"),
+                gridcolor="gray"
+            )
+        )
+
+        duration_fig.update_traces(
+            marker_color="orange",
+            boxmean=True
+        )
+        duration_fig.show()
+
+        # Remove anomalies over 59 hours (59시간 초과 이상치 제거)
+        schedule_removeAnomaly = schedule[schedule["Total duration(Hours)"] <=59]
+        schedule_removeAnomaly[["Ship Company","Enter Time", "Out Time", "Duration days", "Duration hours", "Total duration(Hours)"]].to_csv("../useData/finishPrepro/shipsDuration.csv")
+        schedule_removeAnomaly.head()
+
+        # Redraw box plot after anomaly removal (이상치 제거 후 시각화)
+        duration_fig = px.box(
+            schedule_removeAnomaly,
+            y="Total duration(Hours)",
+            title="Residence Time by Shipping Company",
+        )
+
+        duration_fig.update_layout(
+            title=dict(
+                text="<b>Residence Time by Shipping Company<br>(Remove outliers)</b>",
+                x=0.5,
+                xanchor='center',
+                font=dict(color="white")
+            ),
+            plot_bgcolor="black",
+            paper_bgcolor="black",
+            font=dict(color="white"),
+            xaxis=dict(
+                title=dict(text="Ship Company", font=dict(color="white")),
+                tickfont=dict(color="white")
+            ),
+            yaxis=dict(
+                title=dict(text="Total Duration (Hours)", font=dict(color="white")),
+                tickfont=dict(color="white"),
+                gridcolor="gray"
+            )
+        )
+
+        duration_fig.update_traces(
+            marker_color="red",
+            boxmean=True
+        )
+        duration_fig.show()
+
+        # Extract top 10 ship names (상위 10개 선사 추출)
+        top10_ship = [v for v in avgDuration_ships_top10["Ship name"]]
+
+        index_list = list()
+        for i, v in enumerate(schedule["Ship Company"]):
+            if v in top10_ship:
+                index_list.append(i)
+        print(index_list)
+
+        # Extract data for top 10 ships (상위 10개 선사 데이터 추출)
+        schedule_10 = schedule.iloc[index_list].reset_index().iloc[:,1:]
+        schedule_10
+
+        # Draw filtered box plot (선택 선사만 시각화)
+        duration_fig = px.box(
+            schedule_10,
+            x="Ship Company",
+            y="Total duration(Hours)",
+            title="Residence Time by Shipping Company",
+        )
+
+        duration_fig.update_layout(
+            title=dict(
+                text="<b>Residence Time by Shipping Company<br>(Remove outliers)</b>",
+                x=0.5,
+                xanchor='center',
+                font=dict(color="white")
+            ),
+            plot_bgcolor="black",
+            paper_bgcolor="black",
+            font=dict(color="white"),
+            xaxis=dict(
+                title=dict(text="Ship Company", font=dict(color="white")),
+                tickfont=dict(color="white")
+            ),
+            yaxis=dict(
+                title=dict(text="Total Duration (Hours)", font=dict(color="white")),
+                tickfont=dict(color="white"),
+                gridcolor="gray"
+            )
+        )
+
+        duration_fig.update_traces(
+            marker_color="red",
+            boxmean=True
+        )
+        duration_fig.show()
+
+        # Check anomaly ship (이상치 포함 선사 확인)
+        schedule_10[schedule_10["Ship Company"]=="AEW"]
+
+        # Remove anomaly ship "AEW" and recreate top 10 (AEW 제거 후 top10 재구성)
+        avgDuration_ships_top10 = avgDuration_ships.iloc[:11,:]
+        avgDuration_ships_top10 = avgDuration_ships_top10[avgDuration_ships_top10["Ship name"]!="AEW"]
+        avgDuration_ships_top10
+
+        new_avgDuration_ships = avgDuration_ships.iloc[:11,:]
+        new_avgDuration_ships = new_avgDuration_ships[new_avgDuration_ships["Ship name"]!="AEW"]
+
+        # Re-filter with updated top 10 list (재필터링)
+        new_top10_ship = [v for v in new_avgDuration_ships["Ship name"]]
+        index_list = list()
+        for i, v in enumerate(schedule["Ship Company"]):
+            if v in new_top10_ship:
+                index_list.append(i)
+
+        new_schedule_10 = schedule.iloc[index_list].reset_index().iloc[:,1:]
+        new_schedule_10
+
+        # Final plot for top 10 excluding AEW (AEW 제외 최종 상위 선사 박스플롯)
+        duration_fig = px.box(
+            new_schedule_10,
+            x="Ship Company",
+            y="Total duration(Hours)",
+            title="Residence Time by Shipping Company",
+        )
+
+        duration_fig.update_layout(
+            title=dict(
+                text="<b>Residence Time by Shipping Company<br>(Remove outliers)</b>",
+                x=0.5,
+                xanchor='center',
+                font=dict(color="white")
+            ),
+            plot_bgcolor="black",
+            paper_bgcolor="black",
+            font=dict(color="white"),
+            xaxis=dict(
+                title=dict(text="Ship Company", font=dict(color="white")),
+                tickfont=dict(color="white")
+            ),
+            yaxis=dict(
+                title=dict(text="Total Duration (Hours)", font=dict(color="white")),
+                tickfont=dict(color="white"),
+                gridcolor="gray"
+            )
+        )
+
+        duration_fig.update_traces(
+            marker_color="red",
+            boxmean=True
+        )
+        duration_fig.show()
+        ''')

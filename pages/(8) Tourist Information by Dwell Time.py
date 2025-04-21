@@ -209,7 +209,7 @@ with tab1:
     if stay_time < 24:
         group = None
         st.warning("Travel recommendations are available only for stays of 24 hours or more.")
-        st.stop()
+        
     else:
         if 24 <= stay_time <= 42:
             group = "short"
@@ -315,7 +315,7 @@ with tab2:
     if stay_time < 24:
         group = None
         st.warning("체류 시간이 24시간 이상일 때만 추천 코스를 제공해 드립니다.")
-        st.stop()  # 체류 시간이 부족하면 이후 코드를 실행하지 않음
+        
     else:
         if 24 <= stay_time <= 42:
             group = "short"

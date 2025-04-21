@@ -178,8 +178,9 @@ with tab_1:
     col_9, col_10 = st.columns(2)
     with col_9:
         st.image("./useData/conclusion_img/residence_fourResult.png")
-    with col_10:
         st.image("./useData/conclusion_img/residence_fourResult_shipcompany.png")
+    with col_10:
+        st.image("./useData/conclusion_img/recommend_course.png")
     with st.container(border=True):
         st.markdown('''
         Previous correlation analysis confirmed that <span style='color:Orange; font-weight:bold; font-size:16px;'>as CT (Cargo Throughput) increases, vessel dwell time also tends to increase</span>.

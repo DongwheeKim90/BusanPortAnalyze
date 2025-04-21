@@ -42,8 +42,8 @@ class CorrelationAnalyzer:
 
         # 산점도 제목, 축 라벨, 그래프 사이즈 설정
         fig.update_layout(
-            title=(f'Correlation between {self.x_col} and {self.y_col} in Busan Port<br>'
-                   f'corr: {self.corr:.4f}, p-value: {self.p:.4f}'),
+            title=(f'Correlation between {self.x_col} and {self.y_col}<br>'
+                   f'corr: {self.corr:.4f} / p-value: {self.p:.4f}'),
             xaxis_title=f'{self.x_col} (scaled)',
             yaxis_title=f'{self.y_col} (scaled)',
             template='plotly_white',

@@ -5,6 +5,7 @@ import os
 from tmapAPI.tmapAPI import *
 import nbformat
 from analyzer.dwellTimeAnalyzer import *
+import math
 
 st.set_page_config(layout='wide')
 
@@ -55,6 +56,8 @@ def get_stay_group_course(df, group: str):
 def draw_route_from_tourCourse(df, tmap, mode="car"):
     """
     Draws route segments on a folium map from tour course DataFrame and calculates total distance and total time.
+    Additionally, calculates the bounding box from the center to all spots and computes an appropriate zoom level
+    so that the furthest spot is visible.
     
     Parameters:
         df (DataFrame): Tour spots DataFrame with columns such as 'lat', 'lng', 'name', etc.
@@ -64,11 +67,32 @@ def draw_route_from_tourCourse(df, tmap, mode="car"):
     Returns:
         tuple: (folium Map object, total_distance (km), total_time (min))
     """
-    # 지도 중심을 생성할 좌표: DataFrame에 있는 모든 'lat'와 'lng'의 중앙값(중위수)를 사용
-    center_lat = df['lat'].median()
-    center_lng = df['lng'].median()
-    map_center = [center_lat, center_lng]
-    m = folium.Map(location=map_center, zoom_start=15)
+    # 지도 중심: 모든 스팟의 위도와 경도의 중앙값을 사용
+    center_lat = df['lat'].mean()
+    center_lng = df['lng'].mean()
+    
+    # bounding box 계산: 스팟들의 최소, 최대 위도/경도를 구함
+    min_lat = df['lat'].min()
+    max_lat = df['lat'].max()
+    min_lng = df['lng'].min()
+    max_lng = df['lng'].max()
+    
+    # lat, lng 차이를 구하고, 둘 중 큰 값을 사용 (각 스팟이 중심에서 떨어진 정도의 최대 범위)
+    lat_diff = max_lat - min_lat
+    lng_diff = max_lng - min_lng
+    max_diff = max(lat_diff, lng_diff)
+    
+    # max_diff가 0인 경우(스팟이 1개 등) 대비, 기본 zoom 15 사용
+    if max_diff == 0:
+        zoom = 15
+    else:
+        # 360도(전 세계의 경도 폭)에서 현재 bounding box 크기를 나눈 후 log2를 씌워 대략적인 zoom level 계산
+        zoom = int(math.floor(math.log(360 / max_diff, 2)))
+        # 계산된 zoom 값이 너무 작거나 크지 않도록 보정 (여기서는 11~18 사이로 한정)
+        zoom = max(11, min(18, zoom))
+    
+    # folium 지도 생성: 계산된 중심 좌표와 zoom level 사용
+    m = folium.Map(location=[center_lat, center_lng], zoom_start=zoom)
 
     # Total distance and time accumulate
     total_distance = 0  # in km
@@ -119,6 +143,7 @@ def draw_route_from_tourCourse(df, tmap, mode="car"):
             'lng': end['lng']
         }
 
+        # T맵 API를 통해 경로 데이터를 가져옴
         routes = tmap.get_route_raw(start_info, end_info)
         route_data = tmap.get_route(routes)
         segment = route_data[mode]
@@ -126,7 +151,7 @@ def draw_route_from_tourCourse(df, tmap, mode="car"):
         total_distance += segment['distance']
         total_time += segment['time']
 
-        # Convert coordinates for folium (latitude, longitude)
+        # Convert coordinates for Folium (latitude, longitude)
         coordinates = [(pt[1], pt[0]) for pt in segment['path']]
         folium.PolyLine(locations=coordinates, color=color, weight=3.5, opacity=0.9).add_to(m)
 

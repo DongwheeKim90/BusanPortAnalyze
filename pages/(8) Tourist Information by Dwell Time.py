@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 from tmapAPI.tmapAPI import *
 import nbformat
+from analyzer.dwellTimeAnalyzer import *
 
 st.set_page_config(layout='wide')
 
@@ -53,23 +54,27 @@ def get_stay_group_course(df, group: str):
 
 def draw_route_from_tourCourse(df, tmap, mode="car"):
     """
-    df: 관광지 DataFrame
-    tmap: tmap API 인스턴스
-    mode: "car" 또는 "peds"
+    Draws route segments on a folium map from tour course DataFrame and calculates total distance and total time.
     
-    각 구간별 경로를 folium 지도에 그리면서, 총 이동거리(킬로미터)와 총 소요시간(분)을 합산하여 반환
+    Parameters:
+        df (DataFrame): Tour spots DataFrame with columns such as 'lat', 'lng', 'name', etc.
+        tmap: Tmap API instance.
+        mode (str): "car" for driving mode or "peds" for pedestrian mode.
+    
+    Returns:
+        tuple: (folium Map object, total_distance (km), total_time (min))
     """
-    # 시작점과 끝점 중심으로 지도 초기화
-    start = df.iloc[0]
-    end = df.iloc[-1]
-    map_center = [(start['lat'] + end['lat']) / 2, (start['lng'] + end['lng']) / 2]
-    m = folium.Map(location=map_center, zoom_start=13)
+    # 지도 중심을 생성할 좌표: DataFrame에 있는 모든 'lat'와 'lng'의 중앙값(중위수)를 사용
+    center_lat = df['lat'].median()
+    center_lng = df['lng'].median()
+    map_center = [center_lat, center_lng]
+    m = folium.Map(location=map_center, zoom_start=15)
 
-    # 총 합산을 위한 변수 초기화
-    total_distance = 0    # km 단위
-    total_time = 0        # 분 단위
+    # Total distance and time accumulate
+    total_distance = 0  # in km
+    total_time = 0      # in minutes
 
-    # 각 투어 장소에 마커 추가
+    # Add markers for each tour spot
     for idx, row in df.iterrows():
         if idx == 0:
             color = 'green'
@@ -80,19 +85,18 @@ def draw_route_from_tourCourse(df, tmap, mode="car"):
 
         popup_html = f"""
         <b>{idx+1}. {row['name']}</b><br>
-        평점: {row['rating']}<br>
-        카테고리(KR): {row['category2']}<br>
-        Category(EN): {row['category2_en']}<br>
-        주소: {row['address']}
+        Rating: {row['rating']}<br>
+        Category (KR): {row['category2']}<br>
+        Category (EN): {row['category2_en']}<br>
+        Address: {row['address']}
         """
-
         folium.Marker(
             location=[row['lat'], row['lng']],
             popup=popup_html,
             icon=folium.Icon(color=color)
         ).add_to(m)
 
-    # 연속된 지점 사이의 경로 그리기 및 총합 계산
+    # Draw route segments between consecutive spots and accumulate distance/time
     for i in range(len(df) - 1):
         start = df.iloc[i]
         end = df.iloc[i + 1]
@@ -119,15 +123,14 @@ def draw_route_from_tourCourse(df, tmap, mode="car"):
         route_data = tmap.get_route(routes)
         segment = route_data[mode]
 
-        # 각 구간의 이동거리와 소요시간 누적
         total_distance += segment['distance']
         total_time += segment['time']
 
-        # 경로 좌표 리스트 처리(Folium 좌표 순서: [위도, 경도])
+        # Convert coordinates for folium (latitude, longitude)
         coordinates = [(pt[1], pt[0]) for pt in segment['path']]
         folium.PolyLine(locations=coordinates, color=color, weight=3.5, opacity=0.9).add_to(m)
 
-        # 각 구간의 중간에 구간 정보(거리/시간) 마커 추가
+        # Place segment info (distance/time) at the midpoint
         midpoint_idx = len(coordinates) // 2
         midpoint = coordinates[midpoint_idx]
         folium.Marker(
@@ -138,162 +141,227 @@ def draw_route_from_tourCourse(df, tmap, mode="car"):
                     white-space: nowrap; text-align: center;
                     display: inline-block; min-width: 80px;'>
                     {segment['distance']} km / {segment['time']} min
-                </div>""")
+                </div>
+                """)
         ).add_to(m)
 
     return m, total_distance, total_time
 
 # 탭 생성
-tab1, tab2, tab3 = st.tabs(["Analysis Proccess(EN)", "Analysis Proccess(KR)", "Data Prep&EDA"])
+tab1, tab2, tab3 = st.tabs(["Analysis Proccess(EN)", "Analysis Proccess(KR)", "Data Preprocessing"])
 
 with tab1:
     st.markdown("""
-    <span style='font-weight:bold; font-size:20px;'>Overview: Travel Course Proposal for Long-Stay Shipping Lines at Busan Port</span><br>
-    An analysis of the top 10 shipping lines with the longest average port stays at Busan Port revealed that these companies tend to remain in port for extended periods. As a result, they are likely to be more sensitive to service satisfaction and crew welfare benefits. Therefore, to foster loyalty among these long-stay shipping lines, Busan Port Authority should consider offering <span style='font-weight:bold; font-size:20px;color:orange;'>customized benefits and targeted information</span>.<br>
-    Based on this, the port aims to <span style='font-weight:bold; font-size:20px;'>enhance the stay experience</span> for crew members by providing structured information on <span style='color:orange; font-weight:bold; font-size:20px;'>major attractions</span> near the port, as well as <span style='color:orange; font-weight:bold; font-size:20px;'>restaurants and accommodations with Google ratings of 4.0 or higher</span>.
-    To achieve this, shipping lines will be categorized into <span style='font-weight:bold; font-size:20px;'>three quantile-based groups</span> based on their average port stay durations, and <span style='font-weight:bold; font-size:20px;color:orange;'>tailored travel itineraries</span> will be proposed for each group according to their available time.
+    <span style='font-weight:bold; font-size:20px;'>Overview of Suggested Travel Courses for Long-Stay Shipping Lines at Busan Port</span><br>
+    On the (7) Dwell Time Analysis page, we analyzed the stay durations of incoming cargo ships. Based on this, we aim to provide <span style='font-weight:bold; font-size:20px;'>time-based customized information</span> to help <span style='font-weight:bold; font-size:20px;'>shipping companies and their crew members</span> make more <span style='font-weight:bold; font-size:20px;'>efficient use of their time</span> during their stay in Busan. This serves as a strategic approach by Busan Port Authority to <span style='font-weight:bold; font-size:20px;color:orange;'>enhance satisfaction and offer welfare benefits to foreign shipping companies, its key clientele</span>. To achieve this, we collected data on nearby restaurants, accommodations, and major tourist spots with Google ratings of 4.0 or higher. Then, we <span style='font-weight:bold; font-size:20px; color:orange;'>categorized the stays into three groups and created optimized travel courses</span> for each group as shown below.<br>
     """, unsafe_allow_html=True)
 
-    st.dataframe(shipsDuration_10['Total duration(Hours)'].describe())
+    dataArea_en, plotArea_en = st.columns(2)
+    with st.container():
+        with dataArea_en:
+            with st.container():
+                # Dwell time quantile analysis for long-staying shipping companies
+                st.dataframe(shipsDuration_10['Total duration(Hours)'].describe(), row_height=52, height=450)
+        with plotArea_en:
+            with st.container():
+                dwellTA = dwellTimeAnalyzer(shipsDuration_10, 'Total duration(Hours)', 'Ship Company', marker_color='red')
+                boxPlot = dwellTA.draw_boxplot('Residence Time by Shipping Company')
+                st.plotly_chart(boxPlot, use_container_width=True)
 
     st.markdown("""
-    An analysis of quantiles for the top 10 shipping lines' port stay durations at Busan Port shows a distribution ranging from <span style='font-weight:bold; font-size:20px;'>a minimum of 24 hours to a maximum of 58 hours</span>, with relatively small gaps between quantile values. As a result, instead of dividing groups purely based on time brackets, it was deemed more effective to use <span style='color:orange; font-weight:bold; font-size:20px;'>practical criteria that reflect the purpose and behavioral patterns</span> of the shipping lines.<br>
-    In particular, the <span style='font-weight:bold; font-size:20px;'>gap between the 1st quantile (42 hours) and the 3rd quantile (45 hours)</span> is minimal. Therefore, the <span style='color:orange; font-weight:bold; font-size:20px;'>mid-stay group</span> was defined to target shipping lines with relatively short stays but some available leisure time, while the <span style='color:orange; font-weight:bold; font-size:20px;'>short-stay and long-stay groups</span> were clearly differentiated based on distinct time characteristics and usage patterns.
+    From the quantile analysis of stay durations, the top 10 shipping companies stay between <span style='font-weight:bold;font-size:20px;'>a minimum of 24 hours and a maximum of 58 hours</span>. The <span style='font-weight:bold; font-size:20px;'>gap between quantiles is relatively small</span>, which suggests that a grouping approach based solely on duration may be insufficient. Instead, we propose to categorize them based on <span style='color:orange; font-weight:bold;font-size:20px;'>the purpose and behavior patterns</span> of the shipping companies during their stay.<br>
+    In particular, the gap between the <span style='font-weight:bold;font-size:20px;'>1st quartile (42 hours) and 3rd quartile (45 hours)</span> is quite narrow. Thus, the <span style='color:orange; font-weight:bold;font-size:20px;'>mid-stay group</span> targets companies with shorter stays but some spare time, while <span style='color:orange; font-weight:bold;font-size:20px;'>short and long stay groups</span> are more clearly differentiated based on time characteristics and usage patterns.
     """, unsafe_allow_html=True)
 
-    with st.container(border=True):
-        st.markdown("""
-        <span style='font-weight:bold; font-size:20px;'>1. Short Stay Group</span><br>
-        Time Range: <span style='font-weight:bold; font-size:20px;'>24 to 42 hours</span><br>
-        Characteristics: Mainly focused on port-related tasks with limited time for outside activities.<br>
-        Recommendation: Suggest brief itineraries centered on <span style='color:orange; font-weight:bold; font-size:20px;'>nearby attractions</span> around the <span style='color:orange; font-weight:bold; font-size:20px;'>port</span> and focused on <span style='color:orange; font-weight:bold; font-size:20px;'>meals</span>.<br><br>
+    with st.container():
+        short_col_en, mid_col_en, long_col_en = st.columns(3)
+        with short_col_en:
+            st.markdown("""
+            <span style='font-weight:bold; font-size:20px;'>Short Stay Group</span><br>
+            Time Range: <span style='font-weight:bold; font-size:20px;'>24 to 42 hours</span> (0% ~ 25%)<br>
+            Characteristics: Mainly focused on port-related tasks, with limited time for outside activities.<br>
+            Recommendation: <span style='color:orange; font-weight:bold; font-size:20px;'>Short itineraries</span> focusing on <span style='color:orange; font-weight:bold; font-size:20px;'>nearby attractions</span> and <span style='color:orange; font-weight:bold; font-size:20px;'>meals</span><br><br>
+            """, unsafe_allow_html=True)
+        with mid_col_en:
+            st.markdown("""
+            <span style='font-weight:bold; font-size:20px;'>Mid Stay Group</span><br>
+            Time Range: <span style='font-weight:bold; font-size:20px;'>43 to 44 hours</span> (25% ~ 50%)<br>
+            Characteristics: Relatively short stays with time for light outings or local sightseeing.<br>
+            Recommendation: Travel courses including <span style='color:orange; font-weight:bold; font-size:20px;'>meals</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>simple tourist spots</span>, and <span style='color:orange; font-weight:bold; font-size:20px;'>resting places</span> (e.g., cafes, observatories)<br><br>
+            """, unsafe_allow_html=True)
+        with long_col_en:
+            st.markdown("""
+            <span style='font-weight:bold; font-size:20px;'>Long Stay Group</span> (50% and above)<br>
+            Time Range: <span style='font-weight:bold; font-size:20px;'>45 hours or more</span><br>
+            Characteristics: Suitable for overnight stays with time for full outdoor activities and relaxation.<br>
+            Recommendation: <span style='color:orange; font-weight:bold; font-size:20px;'>1-night, 2-day itineraries</span> including <span style='color:orange; font-weight:bold; font-size:20px;'>tourist attractions</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>local meals</span>, and <span style='color:orange; font-weight:bold; font-size:20px;'>accommodations</span>
+            """, unsafe_allow_html=True)
 
-        <span style='font-weight:bold; font-size:20px;'>2. Mid Stay Group</span><br>
-        Time Range: <span style='font-weight:bold; font-size:20px;'>43 to 44 hours</span><br>
-        Characteristics: Relatively short stays but allow for small excursions or light sightseeing.<br>
-        Recommendation: Propose courses featuring <span style='color:orange; font-weight:bold; font-size:20px;'>meals</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>simple attractions</span>, and <span style='color:orange; font-weight:bold; font-size:20px;'>relaxing spaces</span> such as cafes or observatories.<br><br>
 
-        <span style='font-weight:bold; font-size:20px;'>3. Long Stay Group</span><br>
-        Time Range: <span style='font-weight:bold; font-size:20px;'>45 hours or more</span><br>
-        Characteristics: Suitable for overnight stays and offers the opportunity for substantial outdoor activities and rest.<br>
-        Recommendation: Recommend <span style='color:orange; font-weight:bold; font-size:20px;'>sightseeing tours</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>local cuisine</span>, and <span style='color:orange; font-weight:bold; font-size:20px;'>accommodation</span> as part of a <span style='font-weight:bold;'>2-day itinerary</span>.
-        """, unsafe_allow_html=True)
+    # ------------- Row 1: Enter Stay Duration | Select Transportation Mode -------------
+    col_input_en, col_transport_en = st.columns(2)
+    with col_input_en:
+        stay_time = st.number_input("Enter your stay duration (in hours)", min_value=0)
+    with col_transport_en:
+        transport_mode = st.selectbox("Select your mode of transport", options=["Choose an option", "Car", "Walking"])
 
-    stay_time = st.number_input("Enter your stay time (in hours)", min_value=0)
-
-    if stay_time >= 24 and stay_time <= 42:
-        group = "short"
-        comment = "You seem to have limited time. We recommend a short itinerary focusing on nearby attractions and dining."
-    elif stay_time >= 43 and stay_time <= 44:
-        group = "mid"
-        comment = "You have moderate time. We recommend an itinerary including dining, simple attractions, and a relaxing spot such as an observatory or park."
-    elif stay_time >= 45:
-        group = "long"
-        comment = "You have plenty of time. We recommend a 1-night, 2-day itinerary including attractions, dining, and accommodation."
-    else:
+    # ------------- Row 2: Determine Group & Display Comment -------------
+    if stay_time < 24:
         group = None
-
-    if group:
-        st.markdown(f"### {comment}")
-
-        # Generate tour course and store in session_state
-        if st.button("Generate Tour Course"):
-            st.session_state.tourCourse = get_stay_group_course(busanSpots, group)
-
-        # Display generated tour course DataFrame
-        if "tourCourse" in st.session_state:
-            tour_df = st.session_state.tourCourse
-            st.dataframe(tour_df)
-
-            # Mode of travel selection using radio button
-            transport_mode = st.radio("Select your mode of travel", options=["Car", "Pedestrian"])
-            mode = "car" if transport_mode == "Car" else "peds"
-
-            # Button to display the travel route map along with total distance and time
-            if st.button("View Travel Route Map"):
-                route_map, total_distance, total_time = draw_route_from_tourCourse(tour_df, tmap, mode=mode)
-                st.markdown(f"### Total Distance: **{total_distance} km**, Total Time: **{total_time} min**")
-                st.components.v1.html(route_map._repr_html_(), height=600)
-        else:
-            st.warning("Please click the 'Generate Tour Course' button first to create a tour course.")
+        st.warning("Travel recommendations are available only for stays of 24 hours or more.")
+        
     else:
-        st.warning("Recommended course is only available if the stay time is 24 hours or more.")
+        if 24 <= stay_time <= 42:
+            group = "short"
+            comment = f"Your stay duration is {stay_time} hours. You belong to the Short Stay Group."
+        elif 43 <= stay_time <= 44:
+            group = "mid"
+            comment = f"Your stay duration is {stay_time} hours. You belong to the Mid Stay Group."
+        elif stay_time >= 45:
+            group = "long"
+            comment = f"Your stay duration is {stay_time} hours. You belong to the Long Stay Group."
+
+    # ------------- Row 3: Left Column - Course Generation & DataFrame / Right Column - Map Output -------------
+    if group is not None:
+        left_col_en, right_col_en = st.columns(2)
+        
+        with left_col_en:
+            st.subheader(f":rainbow[{comment}]", anchor=False)
+            if transport_mode == "Choose an option":
+                st.info("Please select a mode of transport first.")
+            else:
+                if st.button("Generate Travel Course"):
+                    tourCourse = get_stay_group_course(busanSpots, group).fillna('-')
+                    st.session_state.tourCourse = tourCourse
+                    mode = "car" if transport_mode == "Car" else "peds"
+                    st.session_state.mode = mode
+                    st.session_state.route_map, st.session_state.total_distance, st.session_state.total_time = \
+                        draw_route_from_tourCourse(tourCourse, tmap, mode=mode)
+                    st.session_state.map_generated = True
+
+            if "tourCourse" in st.session_state:
+                tour_df = st.session_state.tourCourse.rename(columns={
+                    'name': 'Place',
+                    'rating': 'Rating',
+                    'category1': 'Category',
+                    'category2_en': 'Subcategory',
+                    'address': 'Address'
+                })
+                st.dataframe(tour_df[['Place', 'Rating', 'Category', 'Subcategory', 'Address']], hide_index=True)
+
+        with right_col_en:
+            if "map_generated" in st.session_state and st.session_state.map_generated:
+                st.subheader(f":rainbow[Distance: {round(st.session_state.total_distance, 1)} km / Duration: {st.session_state.total_time} minutes]", anchor=False)
+                st.components.v1.html(st.session_state.route_map._repr_html_(), height=600)
 
 with tab2:
     st.markdown("""
     <span style='font-weight:bold; font-size:20px;'>부산항 장기체류 선사 여행코스 제안 개요</span><br>
-    부산항에 입항하는 화물선 중 <span style='font-weight:bold; font-size:20px;'>체류 시간이 긴 상위 10개 선사</span>를 분석한 결과, 이들 선사들은 항만 내에서 머무는 시간이 상대적으로 길기 때문에, <span style='font-weight:bold; font-size:20px;'>서비스 만족도와 복지 혜택에 민감</span>할 가능성이 높습니다.
-    따라서 부산항만공사에서는 이들 선사들을 <span style='font-weight:bold; font-size:20px;'>충성 고객</span>으로 관리하기 위해, <span style='color:orange; font-weight:bold; font-size:20px;'>차별화된 혜택과 맞춤형 정보</span>를 제공할 필요가 있습니다.<br>
-    위와 같은 이유로, 부산항에 장기 체류하는 선사 직원들의 <span style='font-weight:bold; font-size:20px;'>체류 경험을 향상</span>시키기 위해, <span style='color:orange; font-weight:bold; font-size:20px;'>부산항 인근의 주요 관광지</span>와 <span style='color:orange; font-weight:bold; font-size:20px;'>Google 평점 4.0 이상</span>의 식당 및 숙박업소 정보를 체계적으로 제공합니다.
-    이를 위해, 선사들의 평균 체류 시간을 기준으로 <span style='font-weight:bold; font-size:20px;'>3개의 분위수 그룹</span>으로 나누고, <span style='font-weight:bold; font-size:20px;color:orange;'>각 그룹별 체류 시간에 적합한 맞춤형 여행 코스</span>를 구성할 계획입니다.
+    (7)Dwell Time Analysis 페이지에서 우리는 입항 카고선들에 대한 체류 시간을 분석했고, <span style='font-weight:bold; font-size:20px;'>선사 및 선원들</span>이 부산에 입항했을 때 <span style='font-weight:bold; font-size:20px;'>체류하는 시간을 보다 효율적으로 사용</span>할 수 있도록 주어진 <span style='font-weight:bold; font-size:20px;color:orange;'>시간별 맞춤형 정보를 제공</span>하고자 아래와 같이 데이터를 가공/시각화 했습니다. 이는 부산항만공사가 <span style='font-weight:bold; font-size:20px;color:orange;'>주고객인 외국 선사들에게 높은 만족도와 복지혜택을 줄 수 있는 수단으로 작용할 것</span>입니다. 이를 위해 우리는 부산항 인근의 Google 평점 4.0 이상의 식당, 숙박업소, 주요 관광지 정보를 크롤링하여 아래와 같이 
+    <span style='font-weight:bold; font-size:20px; color:orange;'>선사들의 체류 시간을 세 그룹으로 나누어 적합한 맞춤형 여행 코스를 체계적으로 구성</span>하여 제공했습니다.<br>
     """, unsafe_allow_html=True)
 
-    # 장기체류 선사들의 체류시간 분위수 분석
-    st.dataframe(shipsDuration_10['Total duration(Hours)'].describe())
+    dataArea_kr, plotArea_kr = st.columns(2)
+    with st.container():
+        with dataArea_kr:
+            with st.container():
+                # 장기체류 선사들의 체류시간 분위수 분석
+                st.dataframe(shipsDuration_10['Total duration(Hours)'].describe(), row_height=52, height=450)
+        with plotArea_kr:
+            with st.container():
+                dwellTA = dwellTimeAnalyzer(shipsDuration_10, 'Total duration(Hours)', 'Ship Company', marker_color='red')
+                boxPlot = dwellTA.draw_boxplot('Residence Time by Shipping Company')
+                st.plotly_chart(boxPlot, use_container_width=True, key='boxplot')
+
+
     st.markdown("""
-    체류 시간 분위수 분석 결과, 상위 10개 선사의 체류 시간은 <span style='font-weight:bold;font-size:20px;'>최소 24시간에서 최대 58시간</span> 사이로 분포하고 있으며, 분위수 간의 격차가 크지 않은 것으로 나타났습니다. 따라서 단순한 시간 기준으로 그룹을 나누기보다는, <span style='color:orange; font-weight:bold;font-size:20px;'>선사의 체류 목적과 행동 패턴</span>을 고려한 실용적인 기준에 따라 그룹을 구분하는 것이 더 효과적인 접근으로 판단됩니다.<br>
+    체류 시간 분위수 분석 결과, 상위 10개 선사의 체류 시간은 <span style='font-weight:bold;font-size:20px;'>최소 24시간에서 최대 58시간</span> 사이로 분포하고 있으며, <span style='font-weight:bold; font-size:20px;'>분위수 간의 격차가 크지 않은 것으로 나타났습니다.</span> 따라서 단순한 시간 기준으로 그룹을 나누기보다는, <span style='color:orange; font-weight:bold;font-size:20px;'>선사의 체류 목적과 행동 패턴</span>을 고려한 실용적인 기준에 따라 그룹을 구분하는 것이 더 효과적인 접근으로 판단됩니다.<br>
     특히, <span style='font-weight:bold;font-size:20px;'>1분위(42시간)와 3분위(45시간)</span> 사이의 간격이 매우 좁기 때문에, <span style='color:orange; font-weight:bold;font-size:20px;'>중간 체류 그룹</span>은 상대적으로 체류 시간은 짧지만 일정 여유가 있는 선사들을 위한 타겟팅 기준으로 설정하였고, <span style='color:orange; font-weight:bold;font-size:20px;'>단기 및 장기 체류 그룹</span>은 보다 명확한 시간 특성과 이용 행태를 기반으로 구분하였습니다.
     """, unsafe_allow_html=True)
 
-    with st.container(border=True):
-        st.markdown("""
-        <span style='font-weight:bold; font-size:20px;'>1. 단기 체류 그룹 (Short Stay)</span><br>
-        시간 기준: <span style='font-weight:bold; font-size:20px;'>24시간 이상 ~ 42시간 이하</span><br>
-        특징: 항만 업무 중심의 체류가 주를 이루며, 외부 활동 여유가 적은 그룹입니다.<br>
-        추천 방향: <span style='color:orange; font-weight:bold; font-size:20px;'>항만 인근</span>의 <span style='color:orange; font-weight:bold; font-size:20px;'>근거리 관광지</span> 방문 및 <span style='color:orange; font-weight:bold; font-size:20px;'>식사 위주</span>의 짧은 일정 추천<br><br>
+    with st.container():
+        short_col_kr, mid_col_kr, long_col_kr = st.columns(3)
+        with short_col_kr:
+            st.markdown("""
+            <span style='font-weight:bold; font-size:20px;'>단기 체류 그룹 (Short Stay)</span><br>
+            시간 기준: <span style='font-weight:bold; font-size:20px;'>24시간 이상 ~ 42시간 이하</span> (0% ~ 25%)<br>
+            특징: 항만 업무 중심의 체류가 주를 이루며, 외부 활동 여유가 적은 그룹입니다.<br>
+            추천 방향: <span style='color:orange; font-weight:bold; font-size:20px;'>항만 인근</span>의 <span style='color:orange; font-weight:bold; font-size:20px;'>근거리 관광지</span> 방문 및 <span style='color:orange; font-weight:bold; font-size:20px;'>식사 위주</span>의 짧은 일정 추천<br><br>
+            """, unsafe_allow_html=True)
+        with mid_col_kr:
+            st.markdown("""
+            <span style='font-weight:bold; font-size:20px;'>중기 체류 그룹 (Mid Stay)</span><br>
+            시간 기준: <span style='font-weight:bold; font-size:20px;'>43시간 ~ 44시간</span> (25% ~ 50%)<br>
+            특징: 비교적 짧지만 소규모 외출이나 관광이 가능한 여유가 있는 체류입니다.<br>
+            추천 방향: <span style='color:orange; font-weight:bold; font-size:20px;'>식사</span>와 <span style='color:orange; font-weight:bold; font-size:20px;'>간단한 관광지</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>휴식 공간</span>(카페, 전망대 등) 중심의 코스 제안<br><br>
+            """, unsafe_allow_html=True)
+        with long_col_kr:
+            st.markdown("""
+            <span style='font-weight:bold; font-size:20px;'>장기 체류 그룹 (Long Stay)</span> (50% ~ )<br>
+            시간 기준: <span style='font-weight:bold; font-size:20px;'>45시간 이상</span><br>
+            특징: 1박 이상의 일정이 가능하며, 본격적인 외부 활동 및 휴식을 고려할 수 있는 체류입니다.<br>
+            추천 방향: <span style='color:orange; font-weight:bold; font-size:20px;'>관광지 탐방</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>지역 식사</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>숙박</span>이 포함된 <span style='font-weight:bold;'>1박 2일형 일정</span> 제안
+            """, unsafe_allow_html=True)
 
-        <span style='font-weight:bold; font-size:20px;'>2. 중기 체류 그룹 (Mid Stay)</span><br>
-        시간 기준: <span style='font-weight:bold; font-size:20px;'>43시간 ~ 44시간</span><br>
-        특징: 비교적 짧지만 소규모 외출이나 관광이 가능한 여유가 있는 체류입니다.<br>
-        추천 방향: <span style='color:orange; font-weight:bold; font-size:20px;'>식사</span>와 <span style='color:orange; font-weight:bold; font-size:20px;'>간단한 관광지</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>휴식 공간</span>(카페, 전망대 등) 중심의 코스 제안<br><br>
 
-        <span style='font-weight:bold; font-size:20px;'>3. 장기 체류 그룹 (Long Stay)</span><br>
-        시간 기준: <span style='font-weight:bold; font-size:20px;'>45시간 이상</span><br>
-        특징: 1박 이상의 일정이 가능하며, 본격적인 외부 활동 및 휴식을 고려할 수 있는 체류입니다.<br>
-        추천 방향: <span style='color:orange; font-weight:bold; font-size:20px;'>관광지 탐방</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>지역 식사</span>, <span style='color:orange; font-weight:bold; font-size:20px;'>숙박</span>이 포함된 <span style='font-weight:bold;'>1박 2일형 일정</span> 제안
-        """, unsafe_allow_html=True)
-    # 체류 시간 입력
-    stay_time = st.number_input("체류 시간을 입력하세요 (단위: 시간)", min_value=0)
+    # ------------- Row 1: 체류 시간 입력 | 이동 수단 선택 -------------
+    col_input_kr, col_transport_kr = st.columns(2)
+    with col_input_kr:
+        stay_time = st.number_input("체류 시간을 입력하세요 (단위: 시간)", min_value=0)
+    with col_transport_kr:
+        transport_mode = st.selectbox("이동 수단을 선택하세요", options=["선택하세요", "차량", "보행자"])
 
-    if stay_time >= 24 and stay_time <= 42:
-        group = "short"
-        comment = "활동 여유가 많지는 않으시군요! 인근 관광지 방문 및 식사 위주의 짧은 일정을 추천드려요!"
-    elif stay_time >= 43 and stay_time <= 44:
-        group = "mid"
-        comment = "어느 정도 여유가 있으시군요! 식사와 간단한 관광지, 그리고 전망대/공원 같은 휴식 공간 중심의 일정을 추천드려요!"
-    elif stay_time >= 45:
-        group = "long"
-        comment = "오래 머무시는군요! 관광지, 식사, 숙박이 포함된 1박 2일의 일정을 제안드려요!"
-    else:
+    # ------------- Row 2: 그룹 결정 및 코멘트 출력 -------------
+    if stay_time < 24:
         group = None
-
-    if group:
-
-        st.markdown(f"### {comment}")
-        # 투어 코스를 생성하고 session_state에 저장
-        if st.button("여행 코스 생성하기"):
-            st.session_state.tourCourse = get_stay_group_course(busanSpots, group)
-
-        # 생성된 투어 코스가 session_state에 저장돼 있으면 데이터프레임으로 출력
-        if "tourCourse" in st.session_state:
-            tour_df = st.session_state.tourCourse
-            st.dataframe(tour_df)
-
-            # 이동 수단 선택 (st.radio를 활용한 옵션 선택)
-            transport_mode = st.radio("이동 수단을 선택하세요", options=["차량", "보행자"])
-            mode = "car" if transport_mode == "차량" else "peds"
-
-            # 지도 출력 버튼: 선택된 이동 수단(mode)에 따라 경로 및 소요시간 정보 반영
-            if st.button("여행 경로 지도 보기"):
-                # draw_route_from_tourCourse 함수 내부에서는 지정된 mode에 따라 T맵 API를
-                # 호출하여 차량 경로 또는 보행자 경로 데이터를 가져옵니다.
-                route_map, total_distance, total_time = draw_route_from_tourCourse(tour_df, tmap, mode=mode)
-                st.markdown(f"### 총 이동거리: **{total_distance} km**, 총 이동시간: **{total_time} 분**")
-                st.components.v1.html(route_map._repr_html_(), height=600)
-        else:
-            st.warning("먼저 '여행 코스 생성하기' 버튼을 눌러 코스를 생성해주세요.")
-    else:
         st.warning("체류 시간이 24시간 이상일 때만 추천 코스를 제공해 드립니다.")
+        
+    else:
+        if 24 <= stay_time <= 42:
+            group = "short"
+            comment = f"당신의 체류 시간은 {stay_time}시간입니다. 단기 체류 그룹에 속합니다."
+        elif 43 <= stay_time <= 44:
+            group = "mid"
+            comment = f"당신의 체류 시간은 {stay_time}시간입니다. 중기 체류 그룹에 속합니다."
+        elif stay_time >= 45:
+            group = "long"
+            comment = f"당신의 체류 시간은 {stay_time}시간입니다. 장기 체류 그룹에 속합니다."
+
+    # ------------- Row 3: 왼쪽 컬럼 - 코스 생성 버튼 및 데이터프레임 / 오른쪽 컬럼 - 지도 출력 -------------
+    if group is not None:
+        left_col_kr, right_col_kr = st.columns(2)
+        
+        # 왼쪽 컬럼: 코멘트는 위쪽에 이미 출력되었으므로 코스 생성 버튼과 투어 코스 데이터프레임 출력
+        with left_col_kr:
+            st.subheader(f":rainbow[{comment}]", anchor=False)
+            if transport_mode == "선택하세요":
+                st.info("먼저 이동 수단을 선택해 주세요.")
+            else:
+                if st.button("여행 코스 생성하기"):
+                    # 투어 코스 생성 및 세션에 저장
+                    tourCourse = get_stay_group_course(busanSpots, group).fillna('-')
+                    st.session_state.tourCourse = tourCourse
+                    mode = "car" if transport_mode == "차량" else "peds"
+                    st.session_state.mode = mode
+                    st.session_state.route_map, st.session_state.total_distance, st.session_state.total_time = \
+                        draw_route_from_tourCourse(tourCourse, tmap, mode=mode)
+                    st.session_state.map_generated = True
+
+            if "tourCourse" in st.session_state:
+                tour_df = st.session_state.tourCourse.rename(columns={
+                    'name': '장소',
+                    'rating': '별점',
+                    'category1': '대분류',
+                    'category2': '중분류',
+                    'address': '주소'
+                })
+                st.dataframe(tour_df[['장소', '별점', '대분류', '중분류', '주소']], hide_index=True)
+
+        # 오른쪽 컬럼: 지도를 출력 (총 이동거리 및 시간 정보 포함)
+        with right_col_kr:
+            if "map_generated" in st.session_state and st.session_state.map_generated:
+                st.subheader(f":rainbow[거리: {round(st.session_state.total_distance, 1)} km / 시간: {st.session_state.total_time} 분]", anchor=False)
+                st.components.v1.html(st.session_state.route_map._repr_html_(), height=600)
 
 with tab3:
     st.markdown("<span style='color:orange; font-weight:bold; font-size:20px;'>Data Preprocessing (데이터 가공)</span>", unsafe_allow_html=True)

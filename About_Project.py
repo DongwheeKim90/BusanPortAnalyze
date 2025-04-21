@@ -22,9 +22,9 @@ with pjtIntro_tab_1:
     #-타겟 고객
     st.subheader("1. Target Customers and Market Size 🧑🏽‍🤝‍🧑🏼", anchor=False)
     target_customer_EN = '''
-    The marketing-related data analysis project for revitalizing Busan Port was initiated by project participant Donghwi Kim, based on his recollection of a meeting held in 2020 with officials from the Busan Port Authority of South Korea.
-    At that time, the Busan Port Authority was in the process of developing strategies to promote Busan Port to foreign shipping companies and encourage them to call at the port.
-    Accordingly, project participants Donghwi Kim and Seongil Kim aimed to formulate revitalization strategies for Busan Port and conduct data analysis to support these efforts.
+    The primary customers are foreign seafarers who enter Korea aboard ships operated by shipping companies arriving at Busan Port.
+    Shipping companies, also known as “carriers” or “ocean liner companies,” operate vessels and provide maritime transportation services.
+    We plan to assess the size and sustainability of the foreign seafarer market through correlation analysis of cargo volume and vessel dwell time at Busan Port.
     '''
     intro_badge_EN = '''
     A shipping company operates various types of vessels such as container ships, oil tankers, and bulk carriers, manages shipping routes and sailing schedules, and enters into logistics service contracts with shippers (cargo owners).
@@ -144,7 +144,7 @@ with pjtIntro_tab_2:
     target_customer_KR = '''
     주요 고객은 부산항에 입항하는 선사의 선박을 타고 입국하는 해외 선원들이다.
     선사(해운 회사)는 선박을 운영하고 해상 운송 서비스를 제공하는 기업으로, ‘캐리어(carrier)’ 또는 ‘오션 라이너 컴퍼니(ocean liner company)’라고도 불린다.
-    우리는 부산항 입항 물동량과 해외 선원 수 간의 상관관계 분석을 통해, 해외 선원 시장의 규모와 그 지속 가능성을 평가할 예정이다.
+    우리는 부산항 입항 물동량과 체류시간 등의 상관관계 분석을 통해, 해외 선원 시장의 규모와 그 지속 가능성을 평가할 예정이다.
     '''
     intro_badge_KR = '''
     선사(해운 회사)는 컨테이너선, 유조선, 벌크선 등 다양한 종류의 선박을 운항하고, 항로 및 운항 일정을 관리하며, 화주(화물 소유주)와 물류 서비스 계약을 체결한다.

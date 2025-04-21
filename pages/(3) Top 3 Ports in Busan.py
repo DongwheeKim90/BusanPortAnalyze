@@ -201,9 +201,9 @@ with tab_1:
                 x = port_weight["Year"],
                 y = port_weight["GT(Gross Tonnage)"],
                 name = v,
-                text=individual_port["GT(Gross Tonnage)"],
-                textposition="inside", #inside, outside, asuto, name
-                texttemplate="%{text:,}"
+                # text=individual_port["GT(Gross Tonnage)"],
+                # textposition="inside", #inside, outside, asuto, name
+                # texttemplate="%{text:,}"
             )
         )
 
@@ -558,9 +558,9 @@ with tab_2:
                 x = port_weight["Year"],
                 y = port_weight["Ship Count"],
                 name = v,
-                text=individual_port["Ship Count"],
-                textposition="inside", #inside, outside, asuto, name
-                texttemplate="%{text:,}"
+                # text=individual_port["Ship Count"],
+                # textposition="inside", #inside, outside, asuto, name
+                # texttemplate="%{text:,}"
             )
         )
 
@@ -607,9 +607,9 @@ with tab_2:
                 x = port_weight["Year"],
                 y = port_weight["GT(Gross Tonnage)"],
                 name = v,
-                text=individual_port["GT(Gross Tonnage)"],
-                textposition="inside", #inside, outside, asuto, name
-                texttemplate="%{text:,}"
+                # text=individual_port["GT(Gross Tonnage)"],
+                # textposition="inside", #inside, outside, asuto, name
+                # texttemplate="%{text:,}"
             )
         )
 
@@ -1090,9 +1090,9 @@ with tab_3:
                 x=port_data["Year"],
                 y=port_data["Ship Count"],
                 name=port,
-                text=port_data["Ship Count"],
-                textposition="inside",
-                texttemplate="%{text:,}"
+                # text=port_data["Ship Count"],
+                # textposition="inside",
+                # texttemplate="%{text:,}"
             )
         )
 

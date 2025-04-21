@@ -14,17 +14,16 @@ class CorrelationAnalyzer:
         self.x_color: str = x_color # 첫 번째 시계열 그래프 라인 색상
         self.y_color: str = y_color # 첫 번째 시계열 그래프 라인 색상
         self.scatter_color: str = scatter_color # 상관분석용 산점도 색상
-
-        # 파일 이름 설정
-        # plotly객체에서 상호작용까지 온전히 저장하기 위해 pickle파일로 저장
-        self.scatter_file = f'graph/{self.x_col}_{self.y_col}_Scatter.pkl'
         self.line_file = f'graph/{self.x_col}_{self.y_col}_Line.pkl'
 
         # 상관계수, p-value 계산 및 클래스 매개변수에 저장
         self.corr, self.p = pearsonr(self.df[self.x_col], self.df[self.y_col])
 
     # 상관분석 및 plotly 산점도 객체 생성 및 저장
-    def analyze_and_plot(self):
+    def analyze_and_plot(self, language:str=['en','kr']):
+        # 파일 이름 설정
+        # plotly객체에서 상호작용까지 온전히 저장하기 위해 pickle파일로 저장
+        self.scatter_file = f'graph/{self.x_col}_{self.y_col}_Scatter_{language}.pkl'
         # 피클 파일이 존재하면 불러오기
         if os.path.exists(self.scatter_file):
             with open(self.scatter_file, 'rb') as f:
@@ -40,10 +39,16 @@ class CorrelationAnalyzer:
             name='Data Points'
         ))
 
+        # 언어에 따라 부제목 변경
+        if language=='en':
+            corr = 'Correlation Coefficient'
+        else:
+            corr = '상관계수'
+        
         # 산점도 제목, 축 라벨, 그래프 사이즈 설정
         fig.update_layout(
             title=(f'Correlation between {self.x_col} and {self.y_col}<br>'
-                   f'corr: {self.corr:.4f} / p-value: {self.p:.4f}'),
+                   f'{corr}: {self.corr:.4f} / p-value: {self.p:.4f}'),
             xaxis_title=f'{self.x_col} (scaled)',
             yaxis_title=f'{self.y_col} (scaled)',
             template='plotly_white',

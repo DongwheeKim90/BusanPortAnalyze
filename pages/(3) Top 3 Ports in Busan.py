@@ -152,9 +152,9 @@ with tab_1:
                 x = port_weight["Year"],
                 y = port_weight["Ship Count"],
                 name = v,
-                text=individual_port["Ship Count"],
-                textposition="inside", #inside, outside, asuto, name
-                texttemplate="%{text:,}"
+                # text=individual_port["Ship Count"],
+                # textposition="inside", #inside, outside, asuto, name
+                # texttemplate="%{text:,}"
             )
         )
 

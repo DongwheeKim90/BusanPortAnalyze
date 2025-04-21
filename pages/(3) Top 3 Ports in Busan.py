@@ -20,11 +20,9 @@ with tab_1:
     st.subheader("Busan Ports", anchor=False)
 
     st.markdown('''
-    Among all ports in South Korea, Busan Port recorded the highest number of foreign vessel arrivals and cargo volume over the years.
-    In fact, Busan Port consists of three main ports: <span style='color:orange; font-weight:bold; font-size:20px;'>New Port, North Port, and Gamcheon Port</span>, which are generally referred to collectively as "Busan Port".
-    Accordingly, we collected and visualized data related to the number of ship arrivals and cargo volume across these three ports.
+    Foreign shipping companies most frequently enter Busan Port, which also handles the largest cargo throughput among all ports in Korea. In fact, Busan Port consists of three major sub-ports: <span style='color:orange; font-weight:bold; font-size:20px;'>SinHang Port, North Port, and Gamcheon Port</span>. Collectively, these are typically referred to as Busan Port.  
+    Therefore, we collected and visualized data on the number of vessel arrivals and Gross Tonnage (GT), which represents the total volume of a vessel (including both ship size and cargo capacity), for these three Busan sub-ports.
     ''', unsafe_allow_html=True)
-
 
     # Define map tile options
     tile_option = "CartoDB positron"
@@ -214,7 +212,7 @@ with tab_1:
     fig_2.update_layout(
         barmode="group", #항구별 막대를 표시화기위해 그룹화
         title=dict(
-            text="<b>Annual cargo volume</b> of Busan's three major ports",
+            text="<b>Annual GT(Gross Tonge) volume</b> of Busan's three major ports",
             x=0.3,
             y=0.9,
             font={
@@ -235,8 +233,8 @@ with tab_1:
 
     st.markdown('''
     According to the visual analysis, <span style='color:orange; font-weight:bold; font-size:20px;'>Gamcheon Port</span> recorded the highest number of annual ship arrivals,
-    while <span style='color:orange; font-weight:bold; font-size:20px;'>New Port</span> ranked first in terms of cargo volume.
-    Following this, we conducted a visual analysis to explore the correlation and trends between ship arrivals and cargo volume for the overall Busan Port, which combines all three ports.
+    while <span style='color:orange; font-weight:bold; font-size:20px;'>SinHang Port</span> ranked first in terms of GT(Gross Tonge) volume.
+    Following this, we conducted a visual analysis to explore the correlation and trends between ship arrivals and GT(Gross Tonge) volume for the overall Busan Port, which combines all three ports.
     ''', unsafe_allow_html=True)
 
 
@@ -269,7 +267,7 @@ with tab_1:
     # 전체 레이아웃 설정
     fig_3.update_layout(
         title={
-            "text": "<b>Annual ships and cargo volume</b> entering Busan Port",
+            "text": "<b>Annual ships and GT(Gross Tonge) volume</b> entering Busan Port",
             "x": 0.45,
             "y": 0.9,
             "font": {"size": 20, "color": "white"},
@@ -377,7 +375,7 @@ with tab_1:
         x=totalBusan_visual["Year"],
         y=totalBusan_visual["GT(Gross Tonnage)"],
         trendline="ols",
-        title="<b>Analyzing the Annual Cargo Volume Trend Entering</b> Busan Port",
+        title="<b>Analyzing the Annual GT(Gross Tonge) Volume Trend Entering</b> Busan Port",
         labels={
             "Year": "Year",
             "GT": "GT(Gross Tonnage)"
@@ -423,7 +421,7 @@ with tab_1:
     st.plotly_chart(df_busanWeight, key="trend_shipWeight_en")
 
     st.markdown('''
-    Based on the analysis of the three ports in Busan, <span style='color:white; font-weight:bold; font-size:20px;'>the number of arriving vessels has shown a decreasing trend, while the volume of cargo handled has been increasing</span>. This can be interpreted as a result of <span style='color:orange; font-weight:bold; font-size:20px;'>shipping companies replacing their vessels with larger cargo ships to improve transport efficiency</span>, which is a typical characteristic of maritime logistics.
+    Based on the analysis of the three ports in Busan, <span style='color:white; font-weight:bold; font-size:20px;'>the number of arriving vessels has shown a decreasing trend, while the volume of GT(Gross Tonge) handled has been increasing</span>. This can be interpreted as a result of <span style='color:orange; font-weight:bold; font-size:20px;'>shipping companies replacing their vessels with larger cargo ships to improve transport efficiency</span>, which is a typical characteristic of maritime logistics.
     ''', unsafe_allow_html=True)
 
 with tab_2:

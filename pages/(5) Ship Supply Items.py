@@ -1138,7 +1138,7 @@ with tab_2:
         with st.container():
             st.image("./useData/myImage/Food_wordCloud.png")
     st.markdown('''
-        워드 크라우드 결과 <span style='color:orange; font-weight:bold; font-size:20px;'>고기 품목에서는 Bulgogo, Ogyeopsal, Samgeopsal, Chikin, Galbi</span> 등이 제일 많이 출현하였고, <span style='color:orange; font-weight:bold; font-size:20px;'>음식 품목에서는 Fish, Kimchi,Gukbap, Noodles, Pajeon</span> 등이 출현한 것을 파악할 수 있습니다. 이에 따라 우리는 워드 크라우드에 출현한 키워드 들을 바탕으로 해당 제품을 취급하는 기업을 소싱하는 데 해당 데이터를 활용 할 수 있습니다.
+        워드 크라우드 결과 <span style='color:orange; font-weight:bold; font-size:20px;'>고기 품목에서는 Bulgogi, Ogyeopsal, Samgeopsal, Chikin, Galbi</span> 등이 제일 많이 출현하였고, <span style='color:orange; font-weight:bold; font-size:20px;'>음식 품목에서는 Fish, Kimchi,Gukbap, Noodles, Pajeon</span> 등이 출현한 것을 파악할 수 있습니다. 이에 따라 우리는 워드 크라우드에 출현한 키워드 들을 바탕으로 해당 제품을 취급하는 기업을 소싱하는 데 해당 데이터를 활용 할 수 있습니다.
     ''', unsafe_allow_html=True)
 
     st.subheader("결론", anchor=False)

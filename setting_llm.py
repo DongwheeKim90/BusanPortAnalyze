@@ -3,7 +3,10 @@ import streamlit as st  # Import Streamlit for interactive web interface (대화
 import matplotlib.pyplot as plt # Import matplotlib (used for plotting; we re-import pyplot later) (시각화를 위한 matplotlib 전체 임포트)
 import matplotlib.font_manager as fm
 # 한글 폰트 설정
-plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows의 경우
+font_path = './Fonts/MALGUN.TTF'
+font_name = fm.FontProperties(fname=font_path).get_name()
+plt.rc('font',family=font_name)
+# plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows의 경우
 # 마이너스 부호 깨짐 방지
 plt.rcParams['axes.unicode_minus'] = False
 from dotenv import load_dotenv  # Load environment variables from a .env file (.env 파일에서 환경 변수 불러오기)

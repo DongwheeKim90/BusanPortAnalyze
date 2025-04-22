@@ -6,7 +6,7 @@ import matplotlib.font_manager as fm
 # 한글 깨짐 방지 함수
 def fontSetting():
     font_dirs = 'Fonts/MALGUN.TTF'
-    font_file = fm.findSystemFonts(fname=font_dirs)
+    font_file = fm.findSystemFonts(fontpaths=font_dirs)
     fm.fontManager.addfont(font_file)
     plt.rc('font',family='Malgun Gothic')
 

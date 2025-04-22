@@ -4,9 +4,9 @@ import seaborn as sns
 import numpy as np
 import streamlit as st
 import os
-font_dirs = 'Fonts/MALGUN.TTF'
-font_prop = fm.FontProperties(fname=font_dirs)
-st.subheader(font_prop.get_name())
+font_dirs = 'Fonts'
+font_prop = fm.findSystemFonts(fontpaths=font_dirs)
+st.write(font_prop[0])
 
 
 

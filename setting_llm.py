@@ -2,13 +2,18 @@ import os  # Import os module for accessing environment variables (환경 변수
 import streamlit as st  # Import Streamlit for interactive web interface (대화형 웹 인터페이스 제공을 위한 Streamlit 임포트)
 import matplotlib.pyplot as plt # Import matplotlib (used for plotting; we re-import pyplot later) (시각화를 위한 matplotlib 전체 임포트)
 import matplotlib.font_manager as fm
-# 한글 폰트 설정
-font_path = 'Fonts/MALGUN.TTF'
-font_name = fm.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = font_name.get_name()
+
+# 한글 깨짐 방지 함수
+def fontSetting():
+    # 한글 폰트 설정
+    font_path = 'Fonts/MALGUN.TTF'
+    font_name = fm.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = font_name.get_name()
+    # 마이너스 부호 깨짐 방지
+    plt.rcParams['axes.unicode_minus'] = False
+
+
 # plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows의 경우
-# 마이너스 부호 깨짐 방지
-plt.rcParams['axes.unicode_minus'] = False
 from dotenv import load_dotenv  # Load environment variables from a .env file (.env 파일에서 환경 변수 불러오기)
 from langchain_openai import ChatOpenAI  # OpenAI LLM interface via LangChain (LangChain 기반 OpenAI 언어모델 인터페이스)
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent  # Agent for analyzing Pandas DataFrame (Pandas 데이터프레임 분석용 LangChain 에이전트)
@@ -26,6 +31,8 @@ def importMyBot(x, userQuestion):
     Returns:
     str or None - Text response if applicable, None if visualization only (시각화일 경우 None, 아니면 문자열 응답 반환)
     """
+
+    fontSetting()
 
     # Load API key from .env file (환경변수에서 OpenAI API 키 로드)
     load_dotenv()

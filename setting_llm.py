@@ -3,8 +3,7 @@ import streamlit as st  # Import Streamlit for interactive web interface (대화
 import matplotlib.pyplot as plt # Import matplotlib (used for plotting; we re-import pyplot later) (시각화를 위한 matplotlib 전체 임포트)
 import matplotlib.font_manager as fm
 # 한글 폰트 설정
-font_path = './Fonts/MALGUN.TTF'
-fm.findfont
+font_path = 'Fonts/MALGUN.TTF'
 font_name = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_name.get_name()
 # plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows의 경우

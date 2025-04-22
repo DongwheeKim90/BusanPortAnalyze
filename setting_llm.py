@@ -7,11 +7,10 @@ import matplotlib.font_manager as fm
 def fontSetting():
     # 한글 폰트 설정
     font_path = 'Fonts/MALGUN.TTF'
-    font_name = fm.FontProperties(fname=font_path)
-    plt.rcParams['font.family'] = font_name.get_name()
+    font_name = fm.FontProperties(fname=font_path).get_family()
+    plt.rc('font',family=font_name)
     # 마이너스 부호 깨짐 방지
     plt.rcParams['axes.unicode_minus'] = False
-
 
 # plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows의 경우
 from dotenv import load_dotenv  # Load environment variables from a .env file (.env 파일에서 환경 변수 불러오기)

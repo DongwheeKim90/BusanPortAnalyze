@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt # Import matplotlib (used for plotting; we re-im
 import matplotlib.font_manager as fm
 # 한글 폰트 설정
 font_path = './Fonts/MALGUN.TTF'
-font_name = fm.FontProperties(fname=font_path).get_name()
-plt.rc('font',family=font_name)
+fm.findfont
+font_name = fm.FontProperties(fname=font_path)
+plt.rcParams['font.family'] = font_name.get_name()
 # plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows의 경우
 # 마이너스 부호 깨짐 방지
 plt.rcParams['axes.unicode_minus'] = False

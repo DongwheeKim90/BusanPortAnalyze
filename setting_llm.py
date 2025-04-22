@@ -5,7 +5,9 @@ import matplotlib.font_manager as fm
 
 # 한글 깨짐 방지 함수
 def fontSetting():
-    plt.rc('font',family='Malgun Gothic')
+    font_dirs = 'Fonts/MALGUN.TTF'
+    font_prop = fm.FontProperties(fname=font_dirs)
+    plt.rc('font',family=font_prop.get_name())
 
 # plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows의 경우
 from dotenv import load_dotenv  # Load environment variables from a .env file (.env 파일에서 환경 변수 불러오기)

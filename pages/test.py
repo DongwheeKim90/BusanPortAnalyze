@@ -23,8 +23,6 @@ def fontRegistered():
         fm.fontManager.addfont(font_file)
     fm._load_fontmanager(try_read_cache=False)
 
-st.write([f.name for f in fm.fontManager.ttflist])
-
 def main():
     
     # fontRegistered()

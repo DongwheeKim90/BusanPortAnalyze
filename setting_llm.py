@@ -1,16 +1,21 @@
 import os  # Import os module for accessing environment variables (환경 변수 접근을 위한 os 모듈)
 import streamlit as st  # Import Streamlit for interactive web interface (대화형 웹 인터페이스 제공을 위한 Streamlit 임포트)
 import matplotlib.pyplot as plt # Import matplotlib (used for plotting; we re-import pyplot later) (시각화를 위한 matplotlib 전체 임포트)
-import matplotlib.font_manager as fm
+import matplotlib.font_manager as fm # Import font_manager for adding Font and printing Korean at Vizs (시각화에 한국어 정상 출력을 위해 font_manager 임포트) 
 
-# 한글 깨짐 방지 함수
+# function to prevent Korean breakage (한글 깨짐 방지 함수)
 def fontSetting():
+    # font folder root (폰트 폴더 경로 지정)
     font_dirs = 'Fonts'
+    # searching fonts in font folder (폴더 내 폰트 파일 탐색)
     font_file = fm.findSystemFonts(fontpaths=font_dirs)
+    # add MALGUN.TTF to fontManager (폴더 내 MALGUN.TTF만 fontManager에 추가)
     fm.fontManager.addfont(font_file[0])
+    # set font as 'Malgun Gothic' when making viz with plt (plt 시각화 생성시 폰트를 맑음고딕으로 설정)
     plt.rc('font',family='Malgun Gothic')
+    # prevent - breakage (마이너스 깨짐 방지)
+    plt.rcParams['axes.unicode_minus'] = False
 
-# plt.rcParams['font.family'] = 'Malgun Gothic'  # Windows의 경우
 from dotenv import load_dotenv  # Load environment variables from a .env file (.env 파일에서 환경 변수 불러오기)
 from langchain_openai import ChatOpenAI  # OpenAI LLM interface via LangChain (LangChain 기반 OpenAI 언어모델 인터페이스)
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent  # Agent for analyzing Pandas DataFrame (Pandas 데이터프레임 분석용 LangChain 에이전트)

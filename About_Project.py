@@ -2,6 +2,29 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import threading      # [왜 쓰나] 백그라운드 스레드 실행용
+import requests       # [왜 쓰나] 자기 자신에게 HTTP 핑 전송용
+import time           # [왜 쓰나] 5분 간격 타이머용
+
+# ── Sleep 방지 ────────────────────────────────
+# [왜 쓰나] Streamlit Community Cloud는 비활성 시
+#           자동으로 Sleep됨 → 5분마다 자신에게
+#           핑을 보내서 Sleep 방지
+def keep_alive():
+    while True:
+        time.sleep(300)
+        try:
+            requests.get(
+                "https://forbusanport.streamlit.app",
+                timeout=10
+            )
+        except:
+            pass
+
+if "keep_alive_started" not in st.session_state:
+    st.session_state.keep_alive_started = True
+    threading.Thread(target=keep_alive, daemon=True).start()
+# ─────────────────────────────────────────────
 
 # 메인 페이지 > 프로젝트 제목 및 개요, 프로젝트 참석자, 프로젝트 기간
 st.set_page_config(layout="wide")
